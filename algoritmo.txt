@@ -1,0 +1,32 @@
+SS0:
+	Reservar memoria
+	Leer archivo
+	Crear lista de cuadrados y posición de X (POS_X)
+	Broadcast(lista de cuadrados y POS_X)
+SS1:
+	Para todos los cuadrados:
+		Si contiene a X:
+			Para cada celda perteneciente al cuadrado:
+				celda++;
+	Para todos los cuadrados:
+		Si NO contiene a X:
+			Para cada celda perteneciente al cuadrado:
+				celda= 0
+	Si tengo a X en mi matriz:
+		Broadcast(valor_x) //valor de la celda en POS_X
+SS2:
+	Lista de áreas ={}
+	Para cada celda de la matriz:
+		Si celda.valor = VALOR_X AND celda.visitada=false:
+			A = función_calcular_área(celda)
+			Agregar A a la lista de áreas
+	Send(lista de áreas, P0)
+SS3:
+	Generar grafo de conexiones
+	realizar recorrido desde nodo que contiene a X. (marcar los nodos conectados con nodos que tienen a X)
+	ANS=0
+	Para todas las áreas de la lista de áreas:
+		Si el área está marcada:
+			ANS = ANS + valor_del_área
+	Return ANS.
+	Termina.
