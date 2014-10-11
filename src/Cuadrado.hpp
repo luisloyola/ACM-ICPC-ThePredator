@@ -1,6 +1,8 @@
 #ifndef H_CUADRADO
 #define H_CUADRADO
 
+#include <stdexcept>
+
 enum error_cuadrado{MAL_PARAMETRO};
 
 class Cuadrado
@@ -11,7 +13,7 @@ class Cuadrado
 	
 	public:
 
-		Cuadrado(int x, int y, int largo) throw error_cuadrado;
+		Cuadrado(int x, int y, int largo);
 
 		/**
 		 * Indica si una coordenada pertenece al cuadrado o no
@@ -24,6 +26,6 @@ class Cuadrado
 		 */
 		bool pertenece(int x, int y);
 
-}
+};
 
 #endif

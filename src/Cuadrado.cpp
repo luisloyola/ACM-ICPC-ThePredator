@@ -2,19 +2,19 @@
 
 bool Cuadrado::pertenece(int x, int y)
 {
-	if (x >= this.posx && y >= this.posy 
-		&& x <= (this.posx + largo) && y <= (this.posy + largo))
+	if (x >= this->posx && y >= this->posy 
+		&& x <= (this->posx + largo) && y <= (this->posy + largo))
 		return true;
 
 	return false;
 }
 
-Cuadrado::Cuadrado(int x, int y, int largo) throw error_cuadrado
+Cuadrado::Cuadrado(int x, int y, int largo)
 {
 	if (x < 0 || y < 0 || largo < 0)
-		throw error_cuadrado.MAL_PARAMETRO;
+		throw std::invalid_argument("Parametros no validos");
 
-	this->x = x;
-	this->y = y;
+	this->posx = x;
+	this->posy = y;
 	this->largo = largo;
 }
