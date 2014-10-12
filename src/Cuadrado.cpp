@@ -9,6 +9,21 @@ bool Cuadrado::pertenece(int x, int y)
 	return false;
 }
 
+int Cuadrado::getX()
+{
+	return this->posx;
+}
+
+int Cuadrado::getY()
+{
+	return this->posy;
+}
+
+int Cuadrado::getLargo()
+{
+	return this->largo;
+}
+
 Cuadrado::Cuadrado(int x, int y, int largo)
 {
 	if (x < 0 || y < 0 || largo < 0)
@@ -18,3 +33,5 @@ Cuadrado::Cuadrado(int x, int y, int largo)
 	this->posy = y;
 	this->largo = largo;
 }
+
+
