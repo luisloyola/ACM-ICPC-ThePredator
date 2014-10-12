@@ -12,7 +12,6 @@ class Cuadrado
 		int area;
 	
 	public:
-
 		Cuadrado(int x, int y, int largo);
 
 		/**
@@ -25,7 +24,24 @@ class Cuadrado
 		 * caso contrario.
 		 */
 		bool pertenece(int x, int y);
-
+		
+		/**
+		 * Retorna la posición x del cuadrado
+		 * @return posx
+		 */
+		 int getX();
+		 
+		 /**
+		 * Retorna la posición y del cuadrado
+		 * @return posy
+		 */
+		 int getY();
+		 
+		 /**
+		 * Retorna el largo del cuadrado
+		 * @return largo
+		 */
+		 int getLargo();
 };
 
 #endif
