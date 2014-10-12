@@ -44,12 +44,19 @@ int main(int argc, char** args)
 	
 	//TESTING
 	std::cout<<"TESTING:"<<std::endl;
+	//Una forma de recorrer la lista con iteradores
 	list<Cuadrado>::iterator itCua;
 	itCua=lista_cuadrado.begin();
 	for(int i=0;i<C;i++)
 	{
 		std::cout<< (*itCua).getX()<<"-"<<(*itCua).getY()<<"-"<<(*itCua).getLargo() <<std::endl;
 		itCua++;
+	}
+	
+	//otra forma de recorre rlista con iteradores.
+	for(list<Predator>::iterator itPre = lista_predator.begin(); itPre!=lista_predator.end(); ++itPre)
+	{
+		std::cout<< (*itPre).getX()<<"-"<<(*itPre).getY()<<std::endl;
 	}
 	//endTESTING
 	return 0;
