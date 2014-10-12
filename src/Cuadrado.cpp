@@ -2,7 +2,7 @@
 
 bool Cuadrado::pertenece(int x, int y)
 {
-	if (x >= this->posx && y >= this->posy 
+	if (x >= this->posx && y >= this->posy
 		&& x <= (this->posx + largo) && y <= (this->posy + largo))
 		return true;
 

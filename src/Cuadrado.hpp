@@ -21,7 +21,7 @@ class Cuadrado
 		 * @param x	Es la coordenada «x»
 		 * @param y	Es la coordenada «y»
 		 *
-		 * @return «true» si la coordenada pertenece al cuadrado y «false» en 
+		 * @return «true» si la coordenada pertenece al cuadrado y «false» en
 		 * caso contrario.
 		 */
 		bool pertenece(int x, int y);
