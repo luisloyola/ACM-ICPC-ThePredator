@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "cuadrado.cpp"
+#include "Cuadrado.cpp"
 
  
 //using namespace std;
@@ -30,5 +30,7 @@ int main(int argc, char* argv[])
 	cua->y = 2;
 	cua->size = 4;
 	printf ("%d\n", pertenece(4,4,cua));
+	
+	
 	return 0;
 }

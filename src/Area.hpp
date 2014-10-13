@@ -2,6 +2,7 @@
 #define H_AREA
 
 #include "Cuadrado.hpp"
+#include "Celda.hpp"
 #include <list>
 
 using namespace std;
