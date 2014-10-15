@@ -45,6 +45,16 @@ class Area
 		 * @param nuevo
 		 */
 		void add_celda_inf(int celda_x, int celda_y);
+
+		void add_celda_sup2(const Celda &ce);
+		void add_celda_inf2(const Celda &ce);
+		
+		void setArea(int a);
+		int getArea();
+		list<Celda> get_sup();
+		list<Celda> get_inf();
+		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator);
+		
 };
 
 #endif
