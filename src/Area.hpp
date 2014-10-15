@@ -1,8 +1,8 @@
 #ifndef H_AREA
 #define H_AREA
 
-#include "Cuadrado.hpp"
 #include "Celda.hpp"
+#include "Predator.hpp"
 #include <list>
 
 using namespace std;
@@ -53,7 +53,7 @@ class Area
 		int getArea();
 		list<Celda> get_sup();
 		list<Celda> get_inf();
-		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator);
+		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator, Predator pred);
 		
 };
 

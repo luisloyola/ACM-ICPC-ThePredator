@@ -3,10 +3,10 @@
 #include <string>
 #include <list>
 #include <vector>
-#include "Cuadrado.cpp"
-#include "Predator.cpp"
-#include "Area.cpp"
-#include "Celda.cpp"
+#include "Cuadrado.hpp"
+#include "Predator.hpp"
+#include "Area.hpp"
+#include "Celda.hpp"
 
 #define M 10
 
@@ -26,45 +26,45 @@ int main(int argc, char** args)
 
 	//Leer archivo y recuperar argumentos
 	in >> C;
-	std::list<Cuadrado> lista_cuadrado;
+	list<Cuadrado> lista_cuadrado;
 	for(int i=0;i<C;i++)
 	{//para cada cuadrado
 		int r,c,s;
 		in >> r >> c >> s;
-		//std::cout << "r:" << r << " c:" << c << " s:" << s <<std::endl;
-		Cuadrado* cua_aux = new Cuadrado(r-1,c-1,s);	//crear un cuadrado en el heap
-		lista_cuadrado.push_back(*cua_aux);			//guardar ese cuadrado en una lista
+		//cout << "r:" << r << " c:" << c << " s:" << s <<endl;
+		Cuadrado cua_aux = Cuadrado(r-1,c-1,s);	//crear un cuadrado en el stack
+		lista_cuadrado.push_back(cua_aux);			//copia ese cuadrado en una lista
 	}
 	in >> Q;
-	std::list<Predator> lista_predator;
+	list<Predator> lista_predator;
 	for(int i=0; i<Q;i++)
 	{//para cada predator
 		int pr,pc;
 		in >> pr >>pc;
-		//std::cout<< "pr:" << pr << " pc:" << pc << std::endl;
-		Predator* pre_aux = new Predator(pr-1,pc-1);	//crear un depredador en el heap
-		lista_predator.push_back(*pre_aux);			//guardar ese predador en una lista
+		//cout<< "pr:" << pr << " pc:" << pc << endl;
+		Predator pre_aux =  Predator(pr-1,pc-1);	//crear un depredador en el stack
+		lista_predator.push_back(pre_aux);			//copia ese predador en una lista
 	}
 	
 	
 //////TESTING
 /*
-	std::cout<<"TESTING:"<<std::endl;
+	cout<<"TESTING:"<<endl;
 	//Una forma de recorrer la lista con iteradores
 	list<Cuadrado>::iterator itCua;
 	itCua=lista_cuadrado.begin();
 	for(int i=0;i<C;i++)
 	{
-		std::cout<< (*itCua).getX()<<"-"<<(*itCua).getY()<<"-"<<(*itCua).getLargo() <<std::endl;
+		cout<< (*itCua).getX()<<"-"<<(*itCua).getY()<<"-"<<(*itCua).getLargo() <<endl;
 		itCua++;
 	}
 	
 	//otra forma de recorre rlista con iteradores.
 	for(list<Predator>::iterator itPre = lista_predator.begin(); itPre!=lista_predator.end(); ++itPre)
 	{
-		std::cout<< (*itPre).getX()<<"-"<<(*itPre).getY()<<std::endl;
+		cout<< (*itPre).getX()<<"-"<<(*itPre).getY()<<endl;
 	}
-	std::cout<<"END_TESTING"<<std::endl;
+	cout<<"END_TESTING"<<endl;
 */
 //////endTESTING
 
@@ -72,7 +72,7 @@ int main(int argc, char** args)
 	//Cada maquina tiene que asignar su espacio de memoria
 	int P=4;		//número de procesos a usar
 	int pid=3;		//Id de cada procesador.
-	Predator* pre = new Predator(5,5);
+	Predator pre = Predator(5,5);
 	
 	//Crear matriz dinamica de Celdas.
 	Celda** matrix = NULL;
@@ -111,7 +111,7 @@ int main(int argc, char** args)
 			for(int j=0; j<M;j++)
 			{
 				if( (*itCua).pertenece(matrix[i][j].getX(),matrix[i][j].getY()) &&
-					((*itCua).pertenece(pre->getX(),pre->getY()))) 
+					((*itCua).pertenece(pre.getX(),pre.getY()))) 
 				{//si la celda pertenece al cuadrado y ademas el cuadrado contiene al depredador
 					matrix[i][j].aumentar();
 				}
@@ -128,7 +128,7 @@ int main(int argc, char** args)
 			for(int j=0; j<M;j++)
 			{
 				if( (*itCua).pertenece(matrix[i][j].getX(), matrix[i][j].getY()) && 
-				  !((*itCua).pertenece(pre->getX(),pre->getY())) )
+				  !((*itCua).pertenece(pre.getX(),pre.getY())) )
 				{//si la celda pertenece al cuadrado y ademas el cuadrado NO contiene al depredador
 					matrix[i][j].setAltura(-1);
 				}
@@ -166,12 +166,12 @@ int main(int argc, char** args)
 	matrix[3][9].setAltura(test1);
 	for(int i=0;i<nfilas;i++){
 		for(int j=0; j<M;j++){
-			std::cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<std::endl;
+			cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<endl;
 		}
 	}
 	//Area* A = new Area();
 	//(*A).add_celda_sup2(&(matrix[3][9]));
-	//std::cout<<"asdf:"<<(*A).get_sup().front().getX()<<std::endl;
+	//cout<<"asdf:"<<(*A).get_sup().front().getX()<<endl;
 ////ENDTesting
 
 	//generar áreas
@@ -186,7 +186,7 @@ int main(int argc, char** args)
 			{//si la celda no ha sido visitada y está a la altura del predator
 				//Area* A = new Area();
 				Area A;
-				int aux = A.recorrerArea(i, j, matrix, nfilas, M, valor_predator);
+				int aux = A.recorrerArea(i, j, matrix, nfilas, M, valor_predator, pre);
 				A.setArea(aux);
 				LArea.push_back(A);
 			}
@@ -196,11 +196,11 @@ int main(int argc, char** args)
 	
 	for(int i=0;i<nfilas;i++){
 		for(int j=0; j<M;j++){
-			std::cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<std::endl;
+			cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<endl;
 		}
 	}
 	
-	
+/////MOSTRAR valores de area
 	for(auto& itA:LArea)
 	{
 		cout<<"Tamaño del area: "<<itA.getArea()<<endl;
@@ -215,7 +215,9 @@ int main(int argc, char** args)
 			cout<<"X: "<<itI.getX()<<" Y:"<<itI.getY()<<endl;
 		}
 	}
-	//cout<<"zxcv"<<endl;
+////END_MOSTRAR
+
+
 	return 0;
 }
 
