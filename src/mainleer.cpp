@@ -199,23 +199,23 @@ int main(int argc, char** args)
 			std::cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<std::endl;
 		}
 	}
-	std::cout<<"numero de areas:"<<LArea.size()<<std::endl;
-	for(list<Area>::iterator itA = LArea.begin(); itA != LArea.end(); ++itA)
+	
+	
+	for(auto& itA:LArea)
 	{
-		std::cout<<"	AREA mide: "<<(*itA).getArea()<<std::endl;
-		std::cout<<"	Superiores:"<<std::endl;
-		std::cout<<"	"<<(*itA).get_sup().size()<<std::endl;
-		for(list<Celda>::iterator itCSup = (*itA).get_sup().begin(); itCSup != (*itA).get_sup().end();){
-			std::cout<<"		ASDF"<<std::endl;
-			std::cout<<"X:"<<(*itCSup).getX()<<" Y:"<<(*itCSup).getY()<<std::endl;
-			itCSup++;
+		cout<<"Tamaño del area: "<<itA.getArea()<<endl;
+		cout<<"Sup:"<<endl;
+		for(auto& itS:itA.get_sup())
+		{
+			cout<<"X: "<<itS.getX()<<" Y:"<<itS.getY()<<endl;
 		}
-		std::cout<<"	qwerty"<<std::endl;
-		//std::cout<<"Inferiores:"<<std::endl;
-		//for(list<Celda>::iterator itCInf = (*itA).get_inf().begin(); itCInf != (*itA).get_inf().end(); ++itCInf){
-			//std::cout<<"X:"<<(*itCInf).getX()<<" Y:"<<(*itCInf).getY()<<std::endl;
-		//}
+		cout<<"Inf:"<<endl;
+		for(auto& itI:itA.get_inf())
+		{
+			cout<<"X: "<<itI.getX()<<" Y:"<<itI.getY()<<endl;
+		}
 	}
+	//cout<<"zxcv"<<endl;
 	return 0;
 }
 
