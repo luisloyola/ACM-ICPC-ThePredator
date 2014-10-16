@@ -100,6 +100,30 @@ int Area::recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, 
 
 bool Area::es_adyacente(Area& otra)
 {
-return true;
+	for (auto& celda: inferiores)
+	{
+		for (auto& celda_otra:otra.get_sup())
+		{
+			if (celda.getY() == celda_otra.getY() && 
+				(celda.getX() - celda_otra.getX()) == 1)
+			{
+				return true;
+			}
+		}
+	}
+
+	for (auto& celda: superiores)
+	{
+		for (auto& celda_otra: otra.get_inf())
+		{
+			if (celda.getY() == celda_otra.getY() && 
+				(celda_otra.getX() - celda.getX()) == 1)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
