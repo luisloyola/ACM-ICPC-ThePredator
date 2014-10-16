@@ -7,6 +7,7 @@
 #include "Predator.hpp"
 #include "Area.hpp"
 #include "Celda.hpp"
+#include "Graph.hpp"
 
 #define M 10
 
@@ -14,7 +15,7 @@ using namespace std;
 
 int main(int argc, char** args)
 {
-
+///SS0:
 	int C, Q;	//C=número de cuadrados, Q=número de predators.
 	ifstream in(args[1]);	//archivo de entrada.
 	
@@ -59,7 +60,7 @@ int main(int argc, char** args)
 		itCua++;
 	}
 	
-	//otra forma de recorre rlista con iteradores.
+	//otra forma de recorrer lista con iteradores.
 	for(list<Predator>::iterator itPre = lista_predator.begin(); itPre!=lista_predator.end(); ++itPre)
 	{
 		cout<< (*itPre).getX()<<"-"<<(*itPre).getY()<<endl;
@@ -67,12 +68,13 @@ int main(int argc, char** args)
 	cout<<"END_TESTING"<<endl;
 */
 //////endTESTING
-
-
+	
+	///P0 hace broadcast de la lista de cuadrados y la posición de un predator
+///SS1:
 	//Cada maquina tiene que asignar su espacio de memoria
 	int P=4;		//número de procesos a usar
 	int pid=3;		//Id de cada procesador.
-	Predator pre = Predator(5,5);
+	Predator pre = Predator(9,4);
 	
 	//Crear matriz dinamica de Celdas.
 	Celda** matrix = NULL;
@@ -174,7 +176,7 @@ int main(int argc, char** args)
 	//cout<<"asdf:"<<(*A).get_sup().front().getX()<<endl;
 ////ENDTesting
 
-	//generar áreas
+	//generar lista de áreas
 	int valor_predator = test1;	///TESTING///
 	//int valor_predator = 3;
 	list<Area> LArea;
@@ -204,6 +206,7 @@ int main(int argc, char** args)
 	for(auto& itA:LArea)
 	{
 		cout<<"Tamaño del area: "<<itA.getArea()<<endl;
+		cout<<"Contiene predator:"<<itA.contiene_predator<<endl;
 		cout<<"Sup:"<<endl;
 		for(auto& itS:itA.get_sup())
 		{
@@ -217,6 +220,68 @@ int main(int argc, char** args)
 	}
 ////END_MOSTRAR
 
+////TESTING
+/*
+	Area A_TEST;
+	Celda C_TEST;
+	C_TEST.setXY(5,4);
+	A_TEST.add_celda_sup2(C_TEST);
+	A_TEST.setArea(6);
+	LArea.push_back(A_TEST);
+	*/
+/////END_TESTING
+	//Matching the areas
+	Graph g = Graph(LArea.size());
+	int i=0;
+	int j=0;
+	int index_area_con_predator=-1;
+	for(auto& A:LArea)
+	{
+		j=0;
+		if(A.contiene_predator)
+		{
+			index_area_con_predator = i;
+		}
+		for(auto& B:LArea)
+		{
+			if(A.es_adyacente(B))
+			{
+				g.addEdge(i,j);
+				cout<<i<<" es adyacente a "<<j<<endl;
+			}
+			j++;
+		}
+		i++;
+	}
+	
+	
+////TESTING
+/*
+	g.addEdge(0,3);
+	g.addEdge(3,2);
+	index_area_con_predator=2;
+	*/
+////END_TESTING
+	//identificar que areas son adyacentes transitivamente con el area que contiene al predator.
+	bool* ar = new bool[LArea.size()];//arreglo del tamaño de la lista de areas
+	for(unsigned int a=0; a<LArea.size();a++){
+		ar[a]=false;
+	}
+	g.flood(index_area_con_predator,ar);	//ar dice a que areas puede llegar el predator
+	
+	//Sumar las areas
+	int areaTotal=0;
+	i=0;
+	for(auto& A:LArea){
+	
+		if(ar[i])
+		{//si el predator puede llegar a esta area
+			areaTotal += A.getArea();
+		}
+		i++;
+	}
+	cout<<"El area es:"<<areaTotal<<endl;
+	
 
 	return 0;
 }

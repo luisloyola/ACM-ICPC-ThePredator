@@ -1,7 +1,7 @@
 SS0:
-	Reservar memoria
 	Leer archivo
 	Crear lista de cuadrados y posición de X (POS_X)
+	Reservar memoria
 	Broadcast(lista de cuadrados y POS_X)
 SS1:
 	Para todos los cuadrados:
@@ -11,7 +11,7 @@ SS1:
 	Para todos los cuadrados:
 		Si NO contiene a X:
 			Para cada celda perteneciente al cuadrado:
-				celda= 0
+				celda= -1
 	Si tengo a X en mi matriz:
 		Broadcast(valor_x) //valor de la celda en POS_X
 SS2:

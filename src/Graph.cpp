@@ -82,6 +82,7 @@ void Graph::flood(int i, bool* arr)
 	}
 }
 
+
 Graph::~Graph()
 {
 	for (int i = 0; i < vertexCount; i++)
