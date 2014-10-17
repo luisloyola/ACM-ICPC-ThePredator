@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-class Graph 
+class Graph
 {
 	private:
 
@@ -22,7 +22,7 @@ class Graph
 
 		void print();
 
-		void flood(int i, bool* arr); 
+		void flood(int i, bool* arr);
 
 		~Graph();
 };

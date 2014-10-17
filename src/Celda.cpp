@@ -1,5 +1,24 @@
 #include "Celda.hpp"
 
+Celda::Celda()
+{
+	visitada = false;
+	contiene_predador = false;
+	altura = 0;
+
+	posX = posY = 0;
+}
+
+Celda::Celda(int x, int y)
+{
+	visitada = false;
+	contiene_predador = false;
+	altura = 0;
+
+	posX = x;
+	posY = y;
+}
+
 void Celda::aumentar()
 {
 	this->altura++;
@@ -19,7 +38,7 @@ void Celda::setXY(int x, int y)
 {
 	this->posX = x;
 	this->posY = y;
-}  
+}
 
 int Celda::getX()
 {
@@ -36,13 +55,8 @@ void Celda::visitar()
 	this->visitada = true;
 }
 
-bool Celda::esVisitada()
+bool Celda::fueVisitada()
 {
 	return this->visitada;
 }
 
-/*Celda::Celda(int a)
-{
-	this->altura = a;
-}
-*/

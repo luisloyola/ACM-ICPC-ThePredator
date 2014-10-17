@@ -9,17 +9,17 @@ class Predator
 {
 	private:
 		int posx, posy;
-	
+
 	public:
 
 		Predator(int x, int y);
-		
+
 		/**
 		 * Retorna la posición x del depredador
 		 * @return posx
 		 */
 		 int getX();
-		 
+
 		 /**
 		 * Retorna la posición y del depredador
 		 * @return posy

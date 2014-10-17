@@ -18,7 +18,7 @@ int main(int argc, char** args)
 ///SS0:
 	int C, Q;	//C=número de cuadrados, Q=número de predators.
 	ifstream in(args[1]);	//archivo de entrada.
-	
+
 	if (!in.is_open())
 	{
 		cerr<< "No se encontro el archivo "<< args[1]<< endl;
@@ -46,8 +46,8 @@ int main(int argc, char** args)
 		Predator pre_aux =  Predator(pr-1,pc-1);	//crear un depredador en el stack
 		lista_predator.push_back(pre_aux);			//copia ese predador en una lista
 	}
-	
-	
+
+
 //////TESTING
 /*
 	cout<<"TESTING:"<<endl;
@@ -59,7 +59,7 @@ int main(int argc, char** args)
 		cout<< (*itCua).getX()<<"-"<<(*itCua).getY()<<"-"<<(*itCua).getLargo() <<endl;
 		itCua++;
 	}
-	
+
 	//otra forma de recorrer lista con iteradores.
 	for(list<Predator>::iterator itPre = lista_predator.begin(); itPre!=lista_predator.end(); ++itPre)
 	{
@@ -68,20 +68,20 @@ int main(int argc, char** args)
 	cout<<"END_TESTING"<<endl;
 */
 //////endTESTING
-	
+
 	///P0 hace broadcast de la lista de cuadrados y la posición de un predator
 ///SS1:
 	//Cada maquina tiene que asignar su espacio de memoria
 	int P=4;		//número de procesos a usar
 	int pid=3;		//Id de cada procesador.
 	Predator pre = Predator(9,4);
-	
+
 	//Crear matriz dinamica de Celdas.
 	Celda** matrix = NULL;
 	int nfilas;
 	if(pid==P-1)//último proceso
 	{
-		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan. 
+		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
 	}else{//cualquier otro proceso
 		nfilas = M/P;				//franjas de la matriz total de M/P
 	}
@@ -104,7 +104,7 @@ int main(int argc, char** args)
 
 
 	//Recorrer matrix de celdas (Cuadrados que contienen al predator)
-	
+
 	//para cada cuadrado recorrer la matrix
 	for(list<Cuadrado>::iterator itCua = lista_cuadrado.begin(); itCua!=lista_cuadrado.end(); ++itCua)
 	{
@@ -113,15 +113,15 @@ int main(int argc, char** args)
 			for(int j=0; j<M;j++)
 			{
 				if( (*itCua).pertenece(matrix[i][j].getX(),matrix[i][j].getY()) &&
-					((*itCua).pertenece(pre.getX(),pre.getY()))) 
+					((*itCua).pertenece(pre.getX(),pre.getY())))
 				{//si la celda pertenece al cuadrado y ademas el cuadrado contiene al depredador
 					matrix[i][j].aumentar();
 				}
 			}
 		}
 	}
-	
-	
+
+
 	//para cada cuadrado recorrer la matrix (Cuadrados que NO contienen al predator)
 	for(list<Cuadrado>::iterator itCua = lista_cuadrado.begin(); itCua!=lista_cuadrado.end(); ++itCua)
 	{
@@ -129,7 +129,7 @@ int main(int argc, char** args)
 		{
 			for(int j=0; j<M;j++)
 			{
-				if( (*itCua).pertenece(matrix[i][j].getX(), matrix[i][j].getY()) && 
+				if( (*itCua).pertenece(matrix[i][j].getX(), matrix[i][j].getY()) &&
 				  !((*itCua).pertenece(pre.getX(),pre.getY())) )
 				{//si la celda pertenece al cuadrado y ademas el cuadrado NO contiene al depredador
 					matrix[i][j].setAltura(-1);
@@ -137,7 +137,7 @@ int main(int argc, char** args)
 			}
 		}
 	}
-	
+
 //////TESTING
 	int test1 = 3;
 	for(int i=0; i<nfilas;i++){
@@ -148,7 +148,7 @@ int main(int argc, char** args)
 	matrix[0][0].setAltura(test1);
 	matrix[0][1].setAltura(test1);
 	matrix[1][0].setAltura(test1);
-	
+
 	matrix[2][1].setAltura(test1);
 	matrix[3][0].setAltura(test1);
 	matrix[3][1].setAltura(test1);
@@ -164,7 +164,7 @@ int main(int argc, char** args)
 	matrix[2][7].setAltura(test1);
 	matrix[2][8].setAltura(test1);
 	matrix[1][7].setAltura(test1);
-	
+
 	matrix[3][9].setAltura(test1);
 	for(int i=0;i<nfilas;i++){
 		for(int j=0; j<M;j++){
@@ -184,7 +184,7 @@ int main(int argc, char** args)
 	{
 		for(int j=0; j<M;j++)
 		{
-			if( (!matrix[i][j].esVisitada()) && matrix[i][j].getAltura()==valor_predator)
+			if( (!matrix[i][j].fueVisitada()) && matrix[i][j].getAltura()==valor_predator)
 			{//si la celda no ha sido visitada y está a la altura del predator
 				//Area* A = new Area();
 				Area A;
@@ -194,14 +194,14 @@ int main(int argc, char** args)
 			}
 		}
 	}
-	
-	
+
+
 	for(int i=0;i<nfilas;i++){
 		for(int j=0; j<M;j++){
 			cout<<"X:"<<matrix[i][j].getX()<<" Y:"<<matrix[i][j].getY()<<endl;
 		}
 	}
-	
+
 /////MOSTRAR valores de area
 	for(auto& itA:LArea)
 	{
@@ -253,8 +253,8 @@ int main(int argc, char** args)
 		}
 		i++;
 	}
-	
-	
+
+
 ////TESTING
 /*
 	g.addEdge(0,3);
@@ -268,12 +268,12 @@ int main(int argc, char** args)
 		ar[a]=false;
 	}
 	g.flood(index_area_con_predator,ar);	//ar dice a que areas puede llegar el predator
-	
+
 	//Sumar las areas
 	int areaTotal=0;
 	i=0;
 	for(auto& A:LArea){
-	
+
 		if(ar[i])
 		{//si el predator puede llegar a esta area
 			areaTotal += A.getArea();
@@ -281,7 +281,7 @@ int main(int argc, char** args)
 		i++;
 	}
 	cout<<"El area es:"<<areaTotal<<endl;
-	
+
 
 	return 0;
 }

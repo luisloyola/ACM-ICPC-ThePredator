@@ -30,7 +30,7 @@ class Area
 		 *
 		 * @return «true» si `otra' es adyacente y «false» en otro caso.
 		 */
-		bool es_adyacente(Area& otra); 
+		bool es_adyacente(Area& otra);
 
 		/**
 		 * Agrega un cuadrado a la lista de cuadrados superior
@@ -48,13 +48,13 @@ class Area
 
 		void add_celda_sup2(const Celda &ce);
 		void add_celda_inf2(const Celda &ce);
-		
+
 		void setArea(int a);
 		int getArea();
 		list<Celda> get_sup();
 		list<Celda> get_inf();
 		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator, Predator pred);
-		
+
 };
 
 #endif

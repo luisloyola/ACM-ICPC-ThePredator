@@ -4,7 +4,7 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(int vertexCount) 
+Graph::Graph(int vertexCount)
 {
 	this->vertexCount = vertexCount;
 	adjacencyMatrix = new bool*[vertexCount];
@@ -39,7 +39,7 @@ void Graph::removeEdge(int i, int j)
 bool Graph::isEdge(int i, int j)
 {
 	if (i >= 0 && i < vertexCount && j > 0 && j < vertexCount)
-	{	
+	{
 		return adjacencyMatrix[i][j];
 	}
 	else
@@ -52,7 +52,7 @@ void Graph::print()
 {
 	for (int i = 0; i < vertexCount; i++)
 	{
-		for (int j = 0; j < vertexCount; j++)	
+		for (int j = 0; j < vertexCount; j++)
 		{
 			std::cout << adjacencyMatrix[i][j];
 		}
@@ -74,7 +74,7 @@ void Graph::flood(int i, bool* arr)
 			if (this->adjacencyMatrix[i][j] == true)
 			{
 				//	std::cout << "entró if" << std::endl;
-				flood(j,arr);	
+				flood(j,arr);
 			}
 			//std::cout << "no if" << std::endl;
 		}
