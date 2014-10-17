@@ -11,8 +11,8 @@ class Area
 {
 	private:
 
-		int area_val;						//!< Cuantas celdas que tiene el area
-		list<Celda> superiores, inferiores;	//!< ? posible futura clase
+		int area_val;						//!< Cuantas celdas tiene el area
+		list<Celda> superiores, inferiores;
 
 
 	public:
@@ -33,21 +33,26 @@ class Area
 		bool es_adyacente(Area& otra);
 
 		/**
-		 * Agrega un cuadrado a la lista de cuadrados superior
+		 * Agrega una celda a la lisa de celdas superiores
 		 *
-		 * @param nuevo
+		 * @param celda_x	Coordenada x de la celda
+		 * @param celda_y	Coordenada y de la celda
 		 */
 		void add_celda_sup(int celda_x, int celda_y);
 
 		/**
-		 * Agrega un cuadrado a la lista de cuadrados inferior
+		 * Agrega una celda a la lisa de celdas inferiores
 		 *
-		 * @param nuevo
+		 * @param celda_x	Coordenada x de la celda
+		 * @param celda_y	Coordenada y de la celda
 		 */
 		void add_celda_inf(int celda_x, int celda_y);
 
-		void add_celda_sup2(const Celda &ce);
-		void add_celda_inf2(const Celda &ce);
+		void add_celda_sup(const Celda ce);
+		void add_celda_inf(const Celda ce);
+
+		void print_celdas_sup();
+		void print_celdas_inf();
 
 		void setArea(int a);
 		int getArea();

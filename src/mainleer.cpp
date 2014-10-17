@@ -172,7 +172,7 @@ int main(int argc, char** args)
 		}
 	}
 	//Area* A = new Area();
-	//(*A).add_celda_sup2(&(matrix[3][9]));
+	//(*A).add_celda_sup(&(matrix[3][9]));
 	//cout<<"asdf:"<<(*A).get_sup().front().getX()<<endl;
 ////ENDTesting
 
@@ -225,7 +225,7 @@ int main(int argc, char** args)
 	Area A_TEST;
 	Celda C_TEST;
 	C_TEST.setXY(5,4);
-	A_TEST.add_celda_sup2(C_TEST);
+	A_TEST.add_celda_sup(C_TEST);
 	A_TEST.setArea(6);
 	LArea.push_back(A_TEST);
 	*/
@@ -284,10 +284,4 @@ int main(int argc, char** args)
 
 
 	return 0;
-}
-
-
-
-
-
-
+} 

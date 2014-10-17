@@ -1,4 +1,7 @@
+#include <iostream>
 #include "Area.hpp"
+
+using namespace std;
 
 Area::Area()
 {
@@ -8,21 +11,22 @@ Area::Area()
 
 void Area::add_celda_sup(int celda_x, int celda_y)
 {
-	//superior.push_back(nuevo);
-
+	Celda nueva(celda_x, celda_y);
+	superiores.push_back(nueva);
 }
 
 void Area::add_celda_inf(int celda_x, int celda_y)
 {
-	//inferior.push_back(nuevo);
+	Celda nueva(celda_x, celda_y);
+	inferiores.push_back(nueva);
 }
 
-void Area::add_celda_sup2(const Celda &ce)
+void Area::add_celda_sup(const Celda ce)
 {
 	superiores.push_back(ce);
 }
 
-void Area::add_celda_inf2(const Celda &ce)
+void Area::add_celda_inf(const Celda ce)
 {
 	inferiores.push_back(ce);
 }
@@ -104,8 +108,11 @@ bool Area::es_adyacente(Area& otra)
 	{
 		for (auto& celda_otra:otra.get_sup())
 		{
+			if (celda.getX() >= celda_otra.getX())
+				break;
+
 			if (celda.getY() == celda_otra.getY() &&
-				(celda.getX() - celda_otra.getX()) == 1)
+				(celda_otra.getX() - celda.getX()) == 1)
 			{
 				return true;
 			}
@@ -116,8 +123,10 @@ bool Area::es_adyacente(Area& otra)
 	{
 		for (auto& celda_otra: otra.get_inf())
 		{
+			if (celda.getX() <= celda_otra.getX())
+				break;
 			if (celda.getY() == celda_otra.getY() &&
-				(celda_otra.getX() - celda.getX()) == 1)
+				(celda.getX() - celda_otra.getX()) == 1)
 			{
 				return true;
 			}
@@ -125,5 +134,25 @@ bool Area::es_adyacente(Area& otra)
 	}
 
 	return false;
+}
+
+void Area::print_celdas_sup()
+{
+	cout<< "{";
+	for (auto& celda: superiores)
+	{
+		cout<< "("<< celda.getX()<< ","<< celda.getY()<< "), ";
+	}
+	cout<< "}"<< endl;
+}
+
+void Area::print_celdas_inf()
+{
+	cout<< "{";
+	for (auto& celda: inferiores)
+	{
+		cout<< "("<< celda.getX()<< ","<< celda.getY()<< "), ";
+	}
+	cout<< "}"<< endl;
 }
 
