@@ -23,6 +23,10 @@ class Area
 		 */
 		Area();
 
+		Area(int valor_inicial);
+
+		~Area();
+
 		/**
 		 * Indica si es adyacente con otra area o no
 		 *
@@ -59,6 +63,23 @@ class Area
 		list<Celda> get_sup();
 		list<Celda> get_inf();
 		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator, Predator pred);
+
+		/**
+		 * Envia el objeto serializado a algun otro procesador. Esta funcion 
+		 * serializa el objeto y lo envia al proceso `pid' mediante la funcion 
+		 * «bsp_send()» de la libreria bsponmpi.
+		 *
+		 * El mensaje va empaquetado como sigue:
+		 *
+		 * {area_val|contiene_predator|num_celdas_sup|num_celdas_inf|[coordenadas_celdas_sup]|[coordenadas_celdas_inf]}
+		 *
+		 * Las coordenadas de las celdas son 2 «int», uno al lado del otro, que 
+		 * indican la coordenada «x» e «y» de la celda.
+		 *
+		 * @param pid	Es el numero del procesador al cual se quiere mandar el 
+		 * objeto
+		 */
+		void send(int pid);
 
 };
 

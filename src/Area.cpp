@@ -1,5 +1,9 @@
 #include <iostream>
 #include "Area.hpp"
+extern "C"
+{
+#include <bsp.h>
+}
 
 using namespace std;
 
@@ -8,6 +12,20 @@ Area::Area()
 	area_val = 0;
 	contiene_predator = false;
 }
+
+Area::Area(int valor_inicial)
+{
+	area_val = valor_inicial;
+	contiene_predator = false;
+}
+
+Area::~Area()
+{
+	superiores.clear();
+	inferiores.clear();
+}
+
+
 
 void Area::add_celda_sup(int celda_x, int celda_y)
 {
@@ -156,3 +174,42 @@ void Area::print_celdas_inf()
 	cout<< "}"<< endl;
 }
 
+void Area::send(int pid)
+{
+	size_t num_sup, num_inf;
+
+	num_sup = superiores.size();
+	num_inf = inferiores.size();
+
+
+	size_t size = sizeof(int) + // area_val
+				sizeof(int) + 	// 1 o 0, dependiendo si tiene o no tiene al predador
+				2*sizeof(int) + // cantidad de elementos de `superiores' e `inferiores'
+				(num_sup + num_inf)*2*sizeof(int);	// coordenadas de las celdas
+
+	void* msg = malloc(size);
+
+	// apuntador indica donde seguir escribiendo
+	int* apuntador = (int*)msg;
+
+	apuntador[0] = area_val;
+	apuntador[1] = (contiene_predator ? 1:0);
+	apuntador[2] = num_sup;
+	apuntador[3] = num_inf;
+
+	int i = 4;
+	for (auto& celda: superiores)
+	{
+		apuntador[i++] = celda.getX();
+		apuntador[i++] = celda.getY();
+	}
+
+	for (auto& celda: inferiores)
+	{
+		apuntador[i++] = celda.getX();
+		apuntador[i++] = celda.getY();
+	}
+
+	bsp_send(pid, 0, msg, size);
+	free(msg);
+}
