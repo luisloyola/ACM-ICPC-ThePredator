@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-enum error_cuadrado{MAL_PARAMETRO};
+#include "Predator.hpp"
 
 class Cuadrado
 {
@@ -26,6 +26,18 @@ class Cuadrado
 		bool pertenece(int x, int y);
 
 		/**
+		 * Indica si el predador especificado `pertenece' al cuadrado. En 
+		 * realidad indica si las coordenadas de «pred» estan dentro de los 
+		 * limites de las coordenadas del cuadrado.
+		 *
+		 * @param pred	Es el predador que se quiere checkear
+		 *
+		 * @return `true' si las coordenadas del predador estan dentro de los 
+		 * limites del cuadrado y `false' en caso contrario
+		 */
+		bool pertenece(Predator &pred);
+
+		/**
 		 * Retorna la posición x del cuadrado
 		 * @return posx
 		 */
@@ -42,6 +54,13 @@ class Cuadrado
 		 * @return largo
 		 */
 		 int getLargo();
+
+		 /**
+		  * Manda el cuadrado al procesador con el pid `pid'
+		  *
+		  * @param pid	Numero del procesador al cual se envia.
+		  */
+		 void send(int pid);
 };
 
 #endif

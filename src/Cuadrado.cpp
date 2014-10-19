@@ -1,4 +1,10 @@
 #include "Cuadrado.hpp"
+#include "Predator.hpp"
+
+extern "C"
+{
+#include <bsp.h>
+}
 
 bool Cuadrado::pertenece(int x, int y)
 {
@@ -7,6 +13,13 @@ bool Cuadrado::pertenece(int x, int y)
 		return true;
 
 	return false;
+}
+
+bool Cuadrado::pertenece(Predator &pred)
+{
+	bool doesit = pertenece(pred.getX(), pred.getY());
+
+	return doesit;
 }
 
 int Cuadrado::getX()
@@ -35,3 +48,13 @@ Cuadrado::Cuadrado(int x, int y, int largo)
 }
 
 
+void Cuadrado::send(int pid)
+{
+	int data[3];
+
+	data[0] = posx;
+	data[1] = posy;
+	data[2] = largo;
+
+	bsp_send(pid, 0, data, 3*sizeof(int));
+}

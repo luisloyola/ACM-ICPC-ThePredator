@@ -25,8 +25,6 @@ Area::~Area()
 	inferiores.clear();
 }
 
-
-
 void Area::add_celda_sup(int celda_x, int celda_y)
 {
 	Celda nueva(celda_x, celda_y);
@@ -188,6 +186,8 @@ void Area::send(int pid)
 				(num_sup + num_inf)*2*sizeof(int);	// coordenadas de las celdas
 
 	void* msg = malloc(size);
+
+	if (msg == NULL) bsp_abort("No se pudo reservar memoria suficiente para enviar datos\n");
 
 	// apuntador indica donde seguir escribiendo
 	int* apuntador = (int*)msg;
