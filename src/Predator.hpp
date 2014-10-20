@@ -8,7 +8,7 @@ enum error_predator{MAL_PARAMETRO2};
 class Predator
 {
 	private:
-		int posx, posy;
+		int posx, posy, altura;
 
 	public:
 
@@ -20,11 +20,23 @@ class Predator
 		 */
 		 int getX();
 
-		 /**
+		/**
 		 * Retorna la posición y del depredador
 		 * @return posy
 		 */
 		 int getY();
+		 
+		/**
+		 * Retorna la altura del depredador
+		 * @return altura
+		 */
+		 int getAltura();
+		 
+		/**
+		 * Asigna una altura la depredador
+		 * @param alt Altura del depredador
+		 */
+		 void setAltura(int alt); 
 };
 
 #endif

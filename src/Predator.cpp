@@ -10,6 +10,15 @@ int Predator::getY()
 	return this->posy;
 }
 
+int Predator::getAltura()
+{
+	return this->altura;
+}
+		 
+void Predator::setAltura(int alt)
+{
+	this->altura = alt;
+} 
 
 Predator::Predator(int x, int y)
 {

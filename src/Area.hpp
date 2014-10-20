@@ -62,7 +62,7 @@ class Area
 		int getArea();
 		list<Celda> get_sup();
 		list<Celda> get_inf();
-		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, int valor_predator, Predator pred);
+		int recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, Predator pred);
 
 		/**
 		 * Envia el objeto serializado a algun otro procesador. Esta funcion 
