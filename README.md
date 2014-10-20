@@ -8,6 +8,6 @@ fuente y tambien el ejecutable «lab1»
 
 En la carpeta en donde se creo el ejecutable escriba en la terminal:
 
-	mpirun -n <numero de procesos> ./lab1
+	mpirun -n <numero de procesos> ./lab1 <archivo de entrada>
 
 
