@@ -15,7 +15,7 @@ extern "C"
 #include <bsp.h>
 }
 
-#define M 10
+#define M 30
 
 using namespace std;
 
@@ -131,23 +131,24 @@ void bsp_main()
 
 	int sub_caso =1;
 
+	//Crear matriz dinamica de Celdas.
+	Celda** matrix = NULL;
+	int nfilas;
+	if(pid==P-1)//último proceso
+	{
+		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
+	}else{//cualquier otro proceso
+		nfilas = M/P;				//franjas de la matriz total de M/P
+	}
+	matrix = new Celda*[nfilas];
+	for(int i =0; i< nfilas; i++)
+	{
+		matrix[i] = new Celda[M];
+	}
+
 	for(auto& predador: lista_pd)
 	{
 
-		//Crear matriz dinamica de Celdas.
-		Celda** matrix = NULL;
-		int nfilas;
-		if(pid==P-1)//último proceso
-		{
-			nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
-		}else{//cualquier otro proceso
-			nfilas = M/P;				//franjas de la matriz total de M/P
-		}
-		matrix = new Celda*[nfilas];
-		for(int i =0; i< nfilas; i++)
-		{
-			matrix[i] = new Celda[M];
-		}
 
 		//Inicializar matriz con celdas de altura 0 y asignar sus posiciones X e Y
 		int ajuste = M/P*pid; //cada proceso tiene una franja de la matriz total.

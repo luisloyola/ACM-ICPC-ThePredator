@@ -1,0 +1,96 @@
+**********************
+SS0
+**********************
+
+Leer C
+lista_cuadrados={}
+lista_depredadores={}
+
+Para i=0 hasta C-1:
+	leer coordenadas cuadrado
+	agregar cuadrado a lista_cuadrados
+done
+	
+Leer Q
+
+Para i=0 hasta Q-1:
+	leer coordenadas de depredador
+	agregar depredador a lista_depredadores
+done
+
+Para i=1 hasta P:
+	Send(lista_depredadores, P_i)
+	Send(lista_cuadrados, P_i)
+done
+
+**********************
+SS1
+**********************
+
+Recibir lista de lista_depredadores
+Recibir lista de lista_cuadrados
+
+sub_caso = 1
+
+Para cada predador:
+
+
+	Para cada cuadrado que contenga a predador:
+		Para cada celda que pertenezca a cuadrado
+			celda.altura++
+		done
+	done
+
+	Para cada cuadrado que NO tenga a predador:
+		Para cada celda que pertenezca a cuadrado
+			celda.altura = 0
+		done
+	done
+	
+	Si tengo a predador en M_i:
+		Para k=0, k!=i, hasta P:
+			Send(predador.altura, P_k)
+		done
+	
+	**********************
+	SS2	(dentro del `for')
+	**********************
+
+	Si no conozco el valor de predador.altura:
+		Recibir el valor predador.altura
+	
+	lista_areas={} 
+	
+	Para cada celda de M_i:
+		Si celda.altura = predador.altura AND celda.visitada=false:
+			A = función_calcular_área(celda)
+			Agregar A a la lista_areas
+	done
+	
+	Send(lista_areas, P_0)
+
+	**********************
+	SS3	(dentro del `for')
+	**********************
+
+	Si pid == 0:
+		
+		Recibir lista_areas
+		
+		areas_conectadas = {<area que contiene a predador>}		// lista de referencias
+
+		Para cada area en lista_areas:
+			Para cada area_c en areas_conectadas:
+				Si area esta conectada con area_c
+					areas_conectadas = areas_conectadas U {area}
+			done
+		done
+
+		ANS=0
+
+		Para cada area en areas_conectadas:
+			ANS = ANS + area.area_val
+		done
+
+		Print("Area recorrida: " + ANS)
+done
