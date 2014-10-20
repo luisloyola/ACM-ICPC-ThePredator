@@ -1,4 +1,7 @@
 #include "comunicacion.hpp"
+#include "Area.hpp"
+#include "Cuadrado.hpp"
+#include "Predator.hpp"
 
 extern "C"
 {
@@ -59,4 +62,42 @@ void get_cuadrados(list<Cuadrado> &destino)
 
 		destino.push_back(nuevo);
 	}
+}
+
+void get_predadores(list<Predator> &destino, int maximo)
+{
+	int data_pred[2];
+
+	for (int i=0; i< maximo; i++)
+	{
+		bsp_move(data_pred, 2*sizeof(int));
+
+		Predator aux(data_pred[0], data_pred[1]); 
+
+		destino.push_back(aux);
+	} 
+}
+
+void send(int pid, list<Cuadrado> &lista)
+{
+	for (auto &sqr: lista)
+	{
+		sqr.send(pid);
+	}
+}
+
+void send(int pid, list<Area> &lista)
+{
+	for (auto &sqr: lista)
+	{
+		sqr.send(pid);
+	} 
+}
+
+void send(int pid, list<Predator> &lista)
+{
+	for (auto &sqr: lista)
+	{
+		sqr.send(pid);
+	} 
 }

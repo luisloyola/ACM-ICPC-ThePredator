@@ -21,3 +21,35 @@ void get_areas(std::list<Area> &destino);
  * cuadrados.
  */
 void get_cuadrados(std::list<Cuadrado> &destino);
+
+/**
+ * Envia una lista de cuadrados al proceso `pid'
+ *
+ * @param lista	Lista que se envia
+ * @param pid	Proceso al cual se envia
+ */
+void send(int pid, list<Cuadrado> &lista);
+
+/**
+ * Envia una lista de areas al proceso `pid' 
+ *
+ * @param lista	Lista que se envia
+ * @param pid	Proceso al cual se envia
+ */
+void send(int pid, list<Area> &lista);
+
+/**
+ * Envia una lista de predadores al proceso `pid' 
+ *
+ * @param lista	Lista que se envia
+ * @param pid	Proceso al cual se envia
+ */
+void send(int pid, list<Predator> &lista);
+
+/**
+ * Obtiene los predadores
+ *
+ * @param destino	Donde los coloca
+ * @param maximo	Maximo numero de predadores a leer
+ */
+void get_predadores(list<Predator> &destino, int maximo);

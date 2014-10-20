@@ -37,6 +37,8 @@ class Predator
 		 * @param alt Altura del depredador
 		 */
 		 void setAltura(int alt); 
+
+		 void send(int pid);
 };
 
 #endif

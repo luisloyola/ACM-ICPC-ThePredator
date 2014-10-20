@@ -1,5 +1,10 @@
 #include "Predator.hpp"
 
+extern "C"
+{
+#include <bsp.h>
+}
+
 int Predator::getX()
 {
 	return this->posx;
@@ -27,4 +32,15 @@ Predator::Predator(int x, int y)
 
 	this->posx = x;
 	this->posy = y;
+	altura = -1;
+}
+
+void Predator::send(int pid)
+{
+	int data[2];
+
+	data[0] = posx;
+	data[1] = posy;
+
+	bsp_send(pid, 0, data, 2*sizeof(int));
 }
