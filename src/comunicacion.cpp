@@ -64,11 +64,14 @@ void get_cuadrados(list<Cuadrado> &destino)
 	}
 }
 
-void get_predadores(list<Predator> &destino, int maximo)
+void get_predadores(list<Predator> &destino)
 {
+	int cuantos, tamanio;
 	int data_pred[2];
 
-	for (int i=0; i< maximo; i++)
+	bsp_qsize(&cuantos, &tamanio); 
+
+	for (int i=0; i< cuantos; i++)
 	{
 		bsp_move(data_pred, 2*sizeof(int));
 

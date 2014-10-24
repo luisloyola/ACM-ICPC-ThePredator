@@ -47,7 +47,6 @@ Cuadrado::Cuadrado(int x, int y, int largo)
 	this->largo = largo;
 }
 
-
 void Cuadrado::send(int pid)
 {
 	int data[3];

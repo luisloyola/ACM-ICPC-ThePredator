@@ -10,7 +10,6 @@
  * @param destino	Es la referencia de la lista en donde se deben agregar las 
  * areas.
  */
-
 void get_areas(std::list<Area> &destino);
 
 /**
@@ -50,6 +49,5 @@ void send(int pid, list<Predator> &lista);
  * Obtiene los predadores
  *
  * @param destino	Donde los coloca
- * @param maximo	Maximo numero de predadores a leer
  */
-void get_predadores(list<Predator> &destino, int maximo);
+void get_predadores(list<Predator> &destino);

@@ -15,7 +15,7 @@ extern "C"
 #include <bsp.h>
 }
 
-#define M 30
+#define M 50
 
 using namespace std;
 
@@ -47,8 +47,8 @@ void bsp_main()
 	int pid = bsp_pid();
 
 	int C, Q;
-	list<Cuadrado> lista_c;
-	list<Predator> lista_pd;
+	list<Cuadrado> lista_c;		//lista de cuadrados
+	list<Predator> lista_pd;	//lista de predadores
 
 	/************************************
 	 * SS0
@@ -98,7 +98,12 @@ void bsp_main()
 	}
 	bsp_sync();
 
-	if (pid == 0)
+	if (pid != 0)	// recibo el numero de predadores
+	{
+		bsp_move(&Q, sizeof(int));
+	}
+
+	else if (pid == 0)
 	{
 		for (int i=1; i< P; i++)
 		{
@@ -107,7 +112,12 @@ void bsp_main()
 	}
 	bsp_sync();
 
-	if (pid == 0)
+	if (pid != 0)
+	{
+		get_predadores(lista_pd);
+	}
+
+	else if (pid == 0)
 	{
 		for (int i=1; i< P; i++)
 		{
@@ -122,10 +132,6 @@ void bsp_main()
 
 	if (pid != 0)
 	{
-		int num_pred;
-		bsp_move(&num_pred, sizeof(int));
-
-		get_predadores(lista_pd, num_pred);
 		get_cuadrados(lista_c);
 	}
 
@@ -134,13 +140,18 @@ void bsp_main()
 	//Crear matriz dinamica de Celdas.
 	Celda** matrix = NULL;
 	int nfilas;
+
 	if(pid==P-1)//último proceso
 	{
 		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
-	}else{//cualquier otro proceso
+	}
+	else
+	{//cualquier otro proceso
 		nfilas = M/P;				//franjas de la matriz total de M/P
 	}
+
 	matrix = new Celda*[nfilas];
+
 	for(int i =0; i< nfilas; i++)
 	{
 		matrix[i] = new Celda[M];
@@ -197,14 +208,13 @@ void bsp_main()
 			}
 		}
 
-		predador.setAltura(matrix[predador.getX()-ajuste][predador.getY()].getAltura());
-
 
 		// Ver si el proceso tiene al depredador en su matrix.
 		if(predador.getX()>=matrix[0][0].getX() &&
 				predador.getX()< (matrix[0][0].getX()+nfilas))
 		{//el proceso tiene al depredador
 			///BROADCAST(altura del predador)
+			predador.setAltura(matrix[predador.getX()-ajuste][predador.getY()].getAltura());
 			int altura = predador.getAltura();
 
 			for(int i=0; i< P; i++)
@@ -215,6 +225,7 @@ void bsp_main()
 				}
 			}		
 		}
+
 
 		bsp_sync();
 
@@ -281,7 +292,6 @@ void bsp_main()
 					if(A.es_adyacente(B))
 					{
 						g.addEdge(i, j);
-						cout<< i<<" es adyacente a "<< j<< endl;
 					}
 					j++;
 				}
@@ -305,12 +315,13 @@ void bsp_main()
 				}
 				i++;
 			}
-			cout<<"El area es:"<< areaTotal<< endl;
+			cout<<"Predador "<< sub_caso<< ": "<< areaTotal<< endl;
 		}
 
 		bsp_sync();
 		sub_caso++;
 	}//for_predator
 
+	bsp_sync();
 	bsp_end();
 } 
