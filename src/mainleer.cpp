@@ -15,7 +15,7 @@ extern "C"
 #include <bsp.h>
 }
 
-#define M 50
+#define M 15
 
 using namespace std;
 
@@ -45,6 +45,8 @@ void bsp_main()
 
 	int P = bsp_nprocs();
 	int pid = bsp_pid();
+
+	int caso = 1;
 
 	int C, Q;
 	list<Cuadrado> lista_c;		//lista de cuadrados
@@ -156,6 +158,9 @@ void bsp_main()
 	{
 		matrix[i] = new Celda[M];
 	}
+
+	if (pid == 0)
+		cout<< "Caso "<< caso<< ":"<< endl;
 
 	for(auto& predador: lista_pd)
 	{
@@ -315,7 +320,7 @@ void bsp_main()
 				}
 				i++;
 			}
-			cout<<"Predador "<< sub_caso<< ": "<< areaTotal<< endl;
+			cout<< areaTotal<< endl;
 		}
 
 		bsp_sync();
