@@ -12,6 +12,7 @@ class Cuadrado
 		int area;
 
 	public:
+		const static int TAG = 8237236;
 		Cuadrado(int x, int y, int largo);
 
 		/**

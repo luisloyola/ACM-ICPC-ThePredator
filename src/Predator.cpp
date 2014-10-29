@@ -1,9 +1,5 @@
 #include "Predator.hpp"
-
-extern "C"
-{
-#include <bsp.h>
-}
+#include <mpi.h>
 
 int Predator::getX()
 {
@@ -42,5 +38,5 @@ void Predator::send(int pid)
 	data[0] = posx;
 	data[1] = posy;
 
-	bsp_send(pid, 0, data, 2*sizeof(int));
+	MPI::COMM_WORLD.Send(data, 2, MPI::INT, pid, Predator::TAG);
 }

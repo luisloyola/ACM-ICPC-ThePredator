@@ -1,10 +1,11 @@
 #include "Cuadrado.hpp"
 #include "Predator.hpp"
 
-extern "C"
-{
-#include <bsp.h>
-}
+#include <mpi.h>
+
+#ifndef MPI_
+	#define MPI_ MPI::COMM_WORLD
+#endif
 
 bool Cuadrado::pertenece(int x, int y)
 {
@@ -55,5 +56,5 @@ void Cuadrado::send(int pid)
 	data[1] = posy;
 	data[2] = largo;
 
-	bsp_send(pid, 0, data, 3*sizeof(int));
+	MPI_.Send(data, 3, MPI::INT, pid, Cuadrado::TAG);
 }

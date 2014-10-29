@@ -1,11 +1,12 @@
 #include <iostream>
 #include "Area.hpp"
-extern "C"
-{
-#include <bsp.h>
-}
+#include <mpi.h>
 
 using namespace std;
+
+#ifndef MPI_
+	#define MPI_ MPI::COMM_WORLD
+#endif
 
 Area::Area()
 {
@@ -17,6 +18,25 @@ Area::Area(int valor_inicial)
 {
 	area_val = valor_inicial;
 	contiene_predator = false;
+}
+
+Area::Area(int* buffer)
+{
+	area_val = buffer[0];
+
+	contiene_predator = (buffer[1] == 1 ? true:false);
+
+	int j;
+
+	for (j=4; j< 4+2*buffer[2]; j+=2)
+	{
+		add_celda_sup(buffer[j], buffer[j+1]);
+	}
+
+	for (; j< 4+2*(buffer[2] + buffer[3]); j+=2)
+	{
+		add_celda_inf(buffer[j], buffer[j+1]);
+	} 
 }
 
 Area::~Area()
@@ -185,31 +205,31 @@ void Area::send(int pid)
 				2*sizeof(int) + // cantidad de elementos de `superiores' e `inferiores'
 				(num_sup + num_inf)*2*sizeof(int);	// coordenadas de las celdas
 
-	void* msg = malloc(size);
+	int nInt = 4 + (num_sup + num_inf)*2;
 
-	if (msg == NULL) bsp_abort("No se pudo reservar memoria suficiente para enviar datos\n");
+	int* msg = (int*) malloc(size);
 
-	// apuntador indica donde seguir escribiendo
-	int* apuntador = (int*)msg;
+	if (msg == NULL) MPI_.Abort(MPI::ERR_NO_MEM);
 
-	apuntador[0] = area_val;
-	apuntador[1] = (contiene_predator ? 1:0);
-	apuntador[2] = num_sup;
-	apuntador[3] = num_inf;
+
+	msg[0] = area_val;
+	msg[1] = (contiene_predator ? 1:0);
+	msg[2] = num_sup;
+	msg[3] = num_inf;
 
 	int i = 4;
 	for (auto& celda: superiores)
 	{
-		apuntador[i++] = celda.getX();
-		apuntador[i++] = celda.getY();
+		msg[i++] = celda.getX();
+		msg[i++] = celda.getY();
 	}
 
 	for (auto& celda: inferiores)
 	{
-		apuntador[i++] = celda.getX();
-		apuntador[i++] = celda.getY();
+		msg[i++] = celda.getX();
+		msg[i++] = celda.getY();
 	}
 
-	bsp_send(pid, 0, msg, size);
+	MPI_.Send(msg, nInt, MPI::INT, pid, Area::TAG);
 	free(msg);
 }

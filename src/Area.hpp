@@ -16,6 +16,7 @@ class Area
 
 
 	public:
+		const static int TAG = 732;
 		bool contiene_predator;				//!< Indica si el predador esta en el area
 
 		/**
@@ -24,6 +25,16 @@ class Area
 		Area();
 
 		Area(int valor_inicial);
+
+		/**
+		 * Constructor. Setea los valores de esta area a partir de un arreglo 
+		 * de enteros que representa el area de la misma forma en la que se 
+		 * serializa en la funcion 'send()'
+		 *
+		 * @param buffer	Arreglo de «int» que trae todos los valores del  
+		 * 'Area' y las coordenadas de las celdas pertenecientes a la misma.
+		 */
+		Area(int* buffer);
 
 		~Area();
 
@@ -67,11 +78,7 @@ class Area
 		/**
 		 * Envia el objeto serializado a algun otro procesador. Esta funcion 
 		 * serializa el objeto y lo envia al proceso `pid' mediante la funcion 
-		 * «bsp_send()» de la libreria bsponmpi.
-		 *
-		 * El mensaje va empaquetado como sigue:
-		 *
-		 * {area_val|contiene_predator|num_celdas_sup|num_celdas_inf|[coordenadas_celdas_sup]|[coordenadas_celdas_inf]}
+		 * «MPI::COMM_WORLD.Send()» de MPI.
 		 *
 		 * Las coordenadas de las celdas son 2 «int», uno al lado del otro, que 
 		 * indican la coordenada «x» e «y» de la celda.
