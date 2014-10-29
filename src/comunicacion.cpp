@@ -3,104 +3,173 @@
 #include "Cuadrado.hpp"
 #include "Predator.hpp"
 
-extern "C"
-{
-#include <bsp.h>
-}
+#include <iostream>
+
+#include <mpi.h>
+
+#ifndef MPI_
+	#define MPI_ MPI::COMM_WORLD
+#endif
+
+#define END_TAG 363
 
 using namespace std;
 
-void get_areas(list<Area> &destino)
+void send(list<Cuadrado> &lista, int pid)
 {
-	int cuantos, tamanio;
-
-	bsp_qsize(&cuantos, &tamanio); 
-
-	int* msg = (int*) malloc(tamanio);
-
-	if (msg == NULL) 
-		bsp_abort("No se pudo reservar memoria suficiente para recibir las areas");
-
-	for (int i=0; i< cuantos; i++)
+	for (auto &sqr: lista)
 	{
-		bsp_move(msg, tamanio);
+		sqr.send(pid);
+	}
+}
 
-		Area nueva(msg[0]);
+void send(list<Area> &lista, int pid)
+{
+	for (auto &sqr: lista)
+	{
+		sqr.send(pid);
+	} 
+	int fin = 0;
 
-		nueva.contiene_predator = (msg[1] == 1 ? true:false);
+	MPI_.Send(&fin, 1, MPI::INT, pid, END_TAG);
+}
 
-		int j;
+void send(list<Predator> &lista, int pid)
+{
+	for (auto &sqr: lista)
+	{
+		sqr.send(pid);
+	} 
+}
 
-		for (j=4; j< 4+2*msg[2]; j+=2)
+void Bcast(list<Predator> &lista, int root)
+{
+	int pid = MPI_.Get_rank();
+	int nproc = MPI_.Get_size();
+	int buffer[2];
+	MPI::Status estado; 
+
+	if (pid == root)
+	{
+		for (int i=0; i< nproc; i++)
 		{
-			nueva.add_celda_sup(msg[j], msg[j+1]);
+			if (i != root)
+			{ 
+				send(lista, i);
+				MPI_.Send(&pid, 1, MPI::INT, i, END_TAG);
+			}
 		}
+	}
 
-		for (; j< 4+2*(msg[2] + msg[3]); j+=2)
+	else
+	{
+		int tag = END_TAG;
+		do
 		{
-			nueva.add_celda_inf(msg[j], msg[j+1]);
+			MPI_.Probe(root, MPI::ANY_TAG, estado);
+			tag  = estado.Get_tag();
+
+			if (tag == Predator::TAG)
+			{
+				MPI_.Recv(buffer, 2, MPI::INT, root, Predator::TAG);
+
+				Predator aux(buffer[0], buffer[1]);
+
+				lista.push_back(aux); 
+			}
+			else if (tag == END_TAG)
+				MPI_.Recv(buffer, 1, MPI::INT, root, END_TAG);
+
+		}while(tag != END_TAG); 
+	}
+}
+
+void Bcast(list<Cuadrado> &lista, int root)
+{
+	int pid = MPI_.Get_rank();
+	int nproc = MPI_.Get_size();
+	int buffer[3];
+	MPI::Status estado; 
+
+	if (pid == root)
+	{
+		for (int i=0; i< nproc; i++)
+		{
+			if (i != root)
+			{ 
+				send(lista, i);
+				MPI_.Send(&pid, 1, MPI::INT, i, END_TAG);
+			}
 		}
-
-		destino.push_back(nueva);
 	}
-	free(msg);
-}
 
-void get_cuadrados(list<Cuadrado> &destino)
-{
-	int cuantos, tamanio;
-	int newsqr[3];
-
-	bsp_qsize(&cuantos, &tamanio); 
-
-
-	for (int i=0; i< cuantos; i++)
+	else
 	{
-		bsp_move(newsqr, 3*sizeof(int));
+		int tag = END_TAG;
+		do
+		{
+			MPI_.Probe(root, MPI::ANY_TAG, estado);
+			tag  = estado.Get_tag();
 
-		Cuadrado nuevo(newsqr[0], newsqr[1], newsqr[2]); 
+			if (tag == Cuadrado::TAG)
+			{
+				MPI_.Recv(buffer, 3, MPI::INT, root, Cuadrado::TAG);
 
-		destino.push_back(nuevo);
-	}
-}
+				Cuadrado aux(buffer[0], buffer[1], buffer[2]);
 
-void get_predadores(list<Predator> &destino)
-{
-	int cuantos, tamanio;
-	int data_pred[2];
+				lista.push_back(aux); 
+			}
+			else if (tag == END_TAG)
+				MPI_.Recv(buffer, 1, MPI::INT, root, END_TAG);
 
-	bsp_qsize(&cuantos, &tamanio); 
-
-	for (int i=0; i< cuantos; i++)
-	{
-		bsp_move(data_pred, 2*sizeof(int));
-
-		Predator aux(data_pred[0], data_pred[1]); 
-
-		destino.push_back(aux);
-	} 
-}
-
-void send(int pid, list<Cuadrado> &lista)
-{
-	for (auto &sqr: lista)
-	{
-		sqr.send(pid);
+		}while(tag != END_TAG); 
 	}
 }
 
-void send(int pid, list<Area> &lista)
+void Gather(list<Area> &lista, int recp_pid)
 {
-	for (auto &sqr: lista)
+	int cont = 0;	// contador que indica cuantas listas a recibido
+	int conf;		// variable para recibir la confirmacion
+
+	int pid = MPI_.Get_rank();
+	int nproc = MPI_.Get_size();
+
+	int* msg;		// es donde se recibe el 'Area'
+	int count;
+
+	MPI::Status estado;
+
+	if (pid != recp_pid)
 	{
-		sqr.send(pid);
-	} 
+		send(lista, recp_pid);
+	}
+
+	else	// pid == recp_pid
+	{
+		while (cont < (nproc - 1))
+		{
+			MPI_.Probe(MPI::ANY_SOURCE, MPI::ANY_TAG, estado);
+
+			switch (estado.Get_tag())
+			{
+				case END_TAG:
+					MPI_.Recv(&conf, 1, MPI::INT, MPI::ANY_SOURCE, END_TAG);
+					cont++;
+					break;
+				
+				case Area::TAG:
+					count = estado.Get_count(MPI::INT);
+					msg = (int*) malloc(count * sizeof(int));
+
+					if (msg == NULL) MPI_.Abort(MPI::ERR_NO_MEM);
+
+					MPI_.Recv(msg, count, MPI::INT, MPI::ANY_SOURCE, Area::TAG);
+
+					Area aux(msg);
+					lista.push_back(aux); 
+					break;
+			}
+		}
+	}
 }
 
-void send(int pid, list<Predator> &lista)
-{
-	for (auto &sqr: lista)
-	{
-		sqr.send(pid);
-	} 
-}
