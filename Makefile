@@ -1,5 +1,5 @@
 CC = mpicxx
-FLAGS = -std=c++11 -Wall -g
+FLAGS = -std=c++11 -Wall
 
 ZIP = 18018294-2_17832733-k.zip
 
@@ -11,7 +11,7 @@ VPATH = src
 
 ALL: $(EXE)
 
-$(EXE): Area.o Celda.o Cuadrado.o Graph.o mainleer.o Predator.o comunicacion.o
+$(EXE): Area.o Celda.o Cuadrado.o Graph.o main.o Predator.o comunicacion.o
 	$(CC) -o $@ $^ $(FLAGS)
 
 %.o: %.cpp
@@ -25,12 +25,12 @@ Celda.o: Celda.hpp
 Cuadrado.o: Cuadrado.hpp
 Graph.o: Graph.hpp
 Predator.o: Predator.hpp
-mainleer.o: Area.hpp Celda.hpp comunicacion.hpp Cuadrado.hpp Graph.hpp Predator.hpp
+main.o: Area.hpp Celda.hpp comunicacion.hpp Cuadrado.hpp Graph.hpp Predator.hpp
 comunicacion.o: comunicacion.hpp Area.hpp Cuadrado.hpp Predator.hpp
 
 ## programa prueba
 
-test: main_prueba.o
+test: main_prueba.o Area.o Celda.o Cuadrado.o Graph.o  Predator.o comunicacion.o
 	$(CC) -o $@ $^ $(FLAGS)
 
 
@@ -38,10 +38,8 @@ test: main_prueba.o
 
 archive: $(ZIP)
 
-$(ZIP): src/*.cpp src/*.hpp
-	git archive MPI --prefix=lab2/ --format=zip > $@
-
-
+$(ZIP): src/*.cpp src/*.hpp Makefile
+	git archive MPI --prefix=lab2/ --format=zip > $@ 
 
 clean:
 	rm *.o -f
