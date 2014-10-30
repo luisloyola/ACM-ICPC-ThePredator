@@ -10,41 +10,33 @@
 #include "Graph.hpp"
 #include "comunicacion.hpp"
 
-extern "C"
-{
-#include <bsp.h>
-}
+#include <mpi.h>
+
+#ifndef MPI_
+	#define MPI_ MPI::COMM_WORLD
+#endif
 
 #define M 15
 
 using namespace std;
 
-void bsp_main();
-
 string filename;
 
 int main(int argc, char* argv[])
 {
-	bsp_init(bsp_main, argc, argv);
+	MPI::Init(argc, argv);
+	const int P = MPI_.Get_size();
+	const int my_pid = MPI_.Get_rank();
 
-	if (argc < 2)
-		cerr<< "Faltan argumentos"<< endl;
-
-	else
+	if (my_pid == 0 && argc < 2)
 	{
-		filename = argv[1];
-		bsp_main();
+		cerr<< "Faltan argumentos"<< endl;
+		MPI_.Abort(MPI::ERR_OTHER);
 	}
 
-	return 0;
-}
+	filename = argv[1];
 
-void bsp_main()
-{
-	bsp_begin(bsp_nprocs());
 
-	int P = bsp_nprocs();
-	int pid = bsp_pid();
 
 	int caso = 1;
 
@@ -52,17 +44,18 @@ void bsp_main()
 	list<Cuadrado> lista_c;		//lista de cuadrados
 	list<Predator> lista_pd;	//lista de predadores
 
+
 	/************************************
 	 * SS0
 	 ************************************/
 
-	if (pid == 0)
+	if (my_pid == 0)
 	{
 		ifstream in(filename);	//archivo de entrada.
 
 		if (!in.is_open())
 		{
-			bsp_abort("No se encontro el archivo %s", filename.data());
+			MPI_.Abort(MPI::ERR_NO_SUCH_FILE);
 		}
 
 		in >> C;
@@ -85,57 +78,19 @@ void bsp_main()
 			Predator pre_aux =  Predator(pr-1, pc-1);	//crear un depredador en el stack	
 			lista_pd.push_back(pre_aux);			//copia ese predador en una lista
 		}
+
+		in.close();
 	}
 
-	///P0 hace broadcast de la lista de cuadrados y la lista de predadores
+	///P0 hace broadcast de la lista de cuadrados y la lista de predadores 
 
-	if (pid == 0)
-	{
-		int num_pred = lista_pd.size();
+	Bcast(lista_pd, 0);
 
-		for (int i=1; i< P; i++)
-		{
-			bsp_send(i, 0, &num_pred, sizeof(int));
-		}
-	}
-	bsp_sync();
-
-	if (pid != 0)	// recibo el numero de predadores
-	{
-		bsp_move(&Q, sizeof(int));
-	}
-
-	else if (pid == 0)
-	{
-		for (int i=1; i< P; i++)
-		{
-			send(i, lista_pd);
-		}
-	}
-	bsp_sync();
-
-	if (pid != 0)
-	{
-		get_predadores(lista_pd);
-	}
-
-	else if (pid == 0)
-	{
-		for (int i=1; i< P; i++)
-		{
-			send(i, lista_c);
-		}
-	}
-	bsp_sync();
+	Bcast(lista_c, 0);
 
 	/************************************
 	 * SS1
 	 ************************************/
-
-	if (pid != 0)
-	{
-		get_cuadrados(lista_c);
-	}
 
 	int sub_caso =1;
 
@@ -143,7 +98,7 @@ void bsp_main()
 	Celda** matrix = NULL;
 	int nfilas;
 
-	if(pid==P-1)//último proceso
+	if(my_pid==P-1)//último proceso
 	{
 		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
 	}
@@ -159,7 +114,7 @@ void bsp_main()
 		matrix[i] = new Celda[M];
 	}
 
-	if (pid == 0)
+	if (my_pid == 0)
 		cout<< "Caso "<< caso<< ":"<< endl;
 
 	for(auto& predador: lista_pd)
@@ -167,7 +122,7 @@ void bsp_main()
 
 
 		//Inicializar matriz con celdas de altura 0 y asignar sus posiciones X e Y
-		int ajuste = M/P*pid; //cada proceso tiene una franja de la matriz total.
+		int ajuste = M/P*my_pid; //cada proceso tiene una franja de la matriz total.
 		for(int i=0; i< nfilas; i++)
 		{
 			for(int j=0; j< M; j++)
@@ -220,19 +175,17 @@ void bsp_main()
 		{//el proceso tiene al depredador
 			///BROADCAST(altura del predador)
 			predador.setAltura(matrix[predador.getX()-ajuste][predador.getY()].getAltura());
+
 			int altura = predador.getAltura();
 
-			for(int i=0; i< P; i++)
+			for (int i=0; i< P; i++)
 			{
-				if(i != pid)
+				if (i != my_pid)
 				{
-					bsp_send(i, 0, &altura, sizeof(int));
+					MPI_.Send(&altura, 1, MPI::INT, i, 0);
 				}
-			}		
-		}
-
-
-		bsp_sync();
+			}
+		} 
 
 		/************************************
 		 * SS2
@@ -240,11 +193,10 @@ void bsp_main()
 
 		if (predador.getAltura() == -1)// no tiene la altura del predador
 		{
-			int valor_predator;
-			
-			bsp_move(&valor_predator, sizeof(int));
+			int altura;
+			MPI_.Recv(&altura, 1, MPI::INT, MPI::ANY_SOURCE, 0);
 
-			predador.setAltura(valor_predator);
+			predador.setAltura(altura);
 		}
 
 		//generar lista de áreas
@@ -265,20 +217,14 @@ void bsp_main()
 
 		//SEND LArea a PO.
 
-		if (pid != 0)
-		{
-			send(0, LArea);
-		}
-
-		bsp_sync();
+		Gather(LArea, 0);
 
 		/************************************
 		 * SS3
 		 ************************************/
 
-		if(pid==0)
+		if(my_pid==0)
 		{
-			get_areas(LArea);
 
 			//Matching the areas
 			Graph g = Graph(LArea.size());
@@ -323,10 +269,9 @@ void bsp_main()
 			cout<< areaTotal<< endl;
 		}
 
-		bsp_sync();
+		MPI_.Barrier();
 		sub_caso++;
 	}//for_predator
 
-	bsp_sync();
-	bsp_end();
+	MPI::Finalize();
 } 
