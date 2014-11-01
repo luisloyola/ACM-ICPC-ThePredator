@@ -16,7 +16,7 @@
 	#define MPI_ MPI::COMM_WORLD
 #endif
 
-#define M 15
+#define M 10000
 
 using namespace std;
 
