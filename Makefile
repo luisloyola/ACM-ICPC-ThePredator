@@ -1,9 +1,9 @@
-CC = mpicxx
-FLAGS = -std=c++11 -Wall
+CC = g++
+CFLAGS = -Wall -lpthread
 
-ZIP = LAB2_18018294-2_17832733-k.zip
+ZIP = LAB3_18018294-2_17832733-k.zip
 
-EXE = lab2
+EXE = lab3
 VPATH = src
 
 
@@ -12,10 +12,10 @@ VPATH = src
 ALL: $(EXE)
 
 $(EXE): Area.o Celda.o Cuadrado.o Graph.o main.o Predator.o comunicacion.o
-	$(CC) -o $@ $^ $(FLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o: %.cpp
-	$(CC) -c $< -o $@ $(FLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 
 ## dependencias
@@ -31,7 +31,7 @@ comunicacion.o: comunicacion.hpp Area.hpp Cuadrado.hpp Predator.hpp
 ## programa prueba
 
 test: main_prueba.o Area.o Celda.o Cuadrado.o Graph.o  Predator.o comunicacion.o
-	$(CC) -o $@ $^ $(FLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 
 ## generar zip de salida el cual se sube a www.usachvirtual.cl
@@ -39,7 +39,7 @@ test: main_prueba.o Area.o Celda.o Cuadrado.o Graph.o  Predator.o comunicacion.o
 archive: $(ZIP)
 
 $(ZIP): src/*.cpp src/*.hpp Makefile
-	git archive MPI --prefix=lab2/ --format=zip > $@ 
+	git archive pthread --prefix=$(EXE)/ --format=zip > $@ 
 
 clean:
 	rm *.o -f
