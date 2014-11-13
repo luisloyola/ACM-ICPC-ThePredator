@@ -78,7 +78,6 @@ class Area
 		/**
 		 * Envia el objeto serializado a algun otro procesador. Esta funcion 
 		 * serializa el objeto y lo envia al proceso `pid' mediante la funcion 
-		 * «MPI::COMM_WORLD.Send()» de MPI.
 		 *
 		 * Las coordenadas de las celdas son 2 «int», uno al lado del otro, que 
 		 * indican la coordenada «x» e «y» de la celda.

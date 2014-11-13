@@ -1,12 +1,9 @@
 #include <iostream>
 #include "Area.hpp"
+#include "main.hpp"
 #include <mpi.h>
 
 using namespace std;
-
-#ifndef MPI_
-	#define MPI_ MPI::COMM_WORLD
-#endif
 
 Area::Area()
 {
@@ -193,43 +190,4 @@ void Area::print_celdas_inf()
 }
 
 void Area::send(int pid)
-{
-	size_t num_sup, num_inf;
-
-	num_sup = superiores.size();
-	num_inf = inferiores.size();
-
-
-	size_t size = sizeof(int) + // area_val
-				sizeof(int) + 	// 1 o 0, dependiendo si tiene o no tiene al predador
-				2*sizeof(int) + // cantidad de elementos de `superiores' e `inferiores'
-				(num_sup + num_inf)*2*sizeof(int);	// coordenadas de las celdas
-
-	int nInt = 4 + (num_sup + num_inf)*2;
-
-	int* msg = (int*) malloc(size);
-
-	if (msg == NULL) MPI_.Abort(MPI::ERR_NO_MEM);
-
-
-	msg[0] = area_val;
-	msg[1] = (contiene_predator ? 1:0);
-	msg[2] = num_sup;
-	msg[3] = num_inf;
-
-	int i = 4;
-	for (auto& celda: superiores)
-	{
-		msg[i++] = celda.getX();
-		msg[i++] = celda.getY();
-	}
-
-	for (auto& celda: inferiores)
-	{
-		msg[i++] = celda.getX();
-		msg[i++] = celda.getY();
-	}
-
-	MPI_.Send(msg, nInt, MPI::INT, pid, Area::TAG);
-	free(msg);
-}
+{ }

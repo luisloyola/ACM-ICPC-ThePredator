@@ -3,10 +3,6 @@
 
 #include <mpi.h>
 
-#ifndef MPI_
-	#define MPI_ MPI::COMM_WORLD
-#endif
-
 bool Cuadrado::pertenece(int x, int y)
 {
 	if (x >= this->posx && y >= this->posy
@@ -50,11 +46,4 @@ Cuadrado::Cuadrado(int x, int y, int largo)
 
 void Cuadrado::send(int pid)
 {
-	int data[3];
-
-	data[0] = posx;
-	data[1] = posy;
-	data[2] = largo;
-
-	MPI_.Send(data, 3, MPI::INT, pid, Cuadrado::TAG);
 }

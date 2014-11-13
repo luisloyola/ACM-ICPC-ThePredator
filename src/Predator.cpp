@@ -33,10 +33,4 @@ Predator::Predator(int x, int y)
 
 void Predator::send(int pid)
 {
-	int data[2];
-
-	data[0] = posx;
-	data[1] = posy;
-
-	MPI::COMM_WORLD.Send(data, 2, MPI::INT, pid, Predator::TAG);
 }
