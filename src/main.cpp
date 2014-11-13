@@ -50,9 +50,12 @@ int main(int argc, char* argv[])
 
 	filename = argv[optind];
 
-	cout<< "Numero de procesos: "<< P<< endl;
-	cout<< "Nombre de archivo: "<< filename<< endl;
+	pthread_t* threads = Init(P, SSteps);
 
+	for (int i=0; i< P; i++)
+		pthread_join(threads[i], NULL);
+
+	exit(EXIT_SUCCESS);
 }
 
 pthread_t* Init(int nthreads, void *(*rutina)(void*))
@@ -208,7 +211,6 @@ void* SSteps(void* id_thread)
 				}
 			}
 		}
-
 
 		// Ver si el proceso tiene al depredador en su matrix.
 		if(predador.getX()>=matrix[0][0].getX() &&
