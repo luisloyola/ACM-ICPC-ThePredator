@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Area.hpp"
 #include "main.hpp"
-#include <mpi.h>
 
 using namespace std;
 

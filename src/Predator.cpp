@@ -1,5 +1,4 @@
 #include "Predator.hpp"
-#include <mpi.h>
 
 int Predator::getX()
 {

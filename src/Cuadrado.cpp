@@ -1,7 +1,6 @@
 #include "Cuadrado.hpp"
 #include "Predator.hpp"
 
-#include <mpi.h>
 
 bool Cuadrado::pertenece(int x, int y)
 {

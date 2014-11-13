@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -lpthread
+CFLAGS = -Wall -std=c++11 -pthread
 
 ZIP = LAB3_18018294-2_17832733-k.zip
 
@@ -11,7 +11,7 @@ VPATH = src
 
 ALL: $(EXE)
 
-$(EXE): Area.o Celda.o Cuadrado.o Graph.o main.o Predator.o comunicacion.o
+$(EXE): Area.o Celda.o Cuadrado.o Graph.o main.o Predator.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o: %.cpp
@@ -25,12 +25,11 @@ Celda.o: Celda.hpp
 Cuadrado.o: Cuadrado.hpp Predator.hpp
 Graph.o: Graph.hpp
 Predator.o: Predator.hpp
-main.o: Area.hpp Celda.hpp comunicacion.hpp Cuadrado.hpp Graph.hpp Predator.hpp
-comunicacion.o: comunicacion.hpp Area.hpp Cuadrado.hpp Predator.hpp
+main.o: Area.hpp Celda.hpp Cuadrado.hpp Graph.hpp Predator.hpp
 
 ## programa prueba
 
-test: main_prueba.o Area.o Celda.o Cuadrado.o Graph.o  Predator.o comunicacion.o
+test: main_prueba.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 
