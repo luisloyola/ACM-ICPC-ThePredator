@@ -1,49 +1,90 @@
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <list>
-#include <vector>
-#include "Cuadrado.hpp"
-#include "Predator.hpp"
-#include "Area.hpp"
-#include "Celda.hpp"
-#include "Graph.hpp"
-#include "comunicacion.hpp"
-
-#include <mpi.h>
-
-#ifndef MPI_
-	#define MPI_ MPI::COMM_WORLD
-#endif
-
-#define M 10000
+#include "main.hpp"
 
 using namespace std;
+
+/* Variables globales relacionadas al algoritmo*/
+
+int P = -1;
+int C, Q;
+list<Cuadrado> lista_c;		//lista de cuadrados
+list<Predator> lista_pd;	//lista de predadores
+list<Area> lista_areas;
+
+/* Mutex y barreras */
+
+int *ids_threads;
+pthread_mutex_t crit_section;
+pthread_barrier_t sync_barriers[4];
+
+int predador_altura;		// altura del predador que se analiza
 
 string filename;
 
 int main(int argc, char* argv[])
 {
-	MPI::Init(argc, argv);
-	const int P = MPI_.Get_size();
-	const int my_pid = MPI_.Get_rank();
+	string optstring = "n:";
+	int opt;
 
-	if (my_pid == 0 && argc < 2)
+	if (argc < 4)
 	{
 		cerr<< "Faltan argumentos"<< endl;
-		MPI_.Abort(MPI::ERR_OTHER);
+		exit(EXIT_FAILURE);
 	}
 
-	filename = argv[1];
+	while ((opt = getopt(argc, argv, optstring.data() )) != -1)
+		switch (opt)
+		{
+			case 'n':
+				sscanf(optarg, "%d", &P);
+				break;
+			case '?':
+				cerr<< "Opcion «"<< (char)optopt<< "» no reconocida."<< endl;
+				exit(ERR_BAD_ARG);
+		}
 
+	if (P < 0)
+	{
+		cerr<< "Numero de procesos invalido"<< endl;
+		exit(ERR_BAD_ARG);
+	}
 
+	filename = argv[optind];
 
-	int caso = 1;
+	cout<< "Numero de procesos: "<< P<< endl;
+	cout<< "Nombre de archivo: "<< filename<< endl;
 
-	int C, Q;
-	list<Cuadrado> lista_c;		//lista de cuadrados
-	list<Predator> lista_pd;	//lista de predadores
+}
 
+pthread_t* Init(int nthreads, void *(*rutina)(void*))
+{
+	int i = 0;
+	pthread_t *threads;
+
+	threads = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
+	ids_threads = (int *) malloc(nthreads * sizeof(int));
+
+	while (i < nthreads)
+	{	
+		ids_threads[i] = i;
+		i++;
+	}
+
+	for (i=0; i< 4; i++)
+		pthread_barrier_init(&sync_barriers[i], NULL, nthreads);
+
+	crit_section = PTHREAD_MUTEX_INITIALIZER;
+
+	for (i=0; i< nthreads; i++)
+		pthread_create(&threads[i], NULL, rutina, &ids_threads[i]);
+
+	return threads;
+}
+
+void* SSteps(void* id_thread)
+{
+	const int my_pid = *(int*)id_thread; 
+
+	int caso = 1; 
 
 	/************************************
 	 * SS0
@@ -55,7 +96,8 @@ int main(int argc, char* argv[])
 
 		if (!in.is_open())
 		{
-			MPI_.Abort(MPI::ERR_NO_SUCH_FILE);
+			cerr<< "Imposible abrir el archivo «"<< filename<< "». Aborten."<< endl;
+			exit(ERR_NO_SUCH_FILE);
 		}
 
 		in >> C;
@@ -84,9 +126,8 @@ int main(int argc, char* argv[])
 
 	///P0 hace broadcast de la lista de cuadrados y la lista de predadores 
 
-	Bcast(lista_pd, 0);
-
-	Bcast(lista_c, 0);
+	/* BARRERA */
+	pthread_barrier_wait(&sync_barriers[0]);
 
 	/************************************
 	 * SS1
@@ -98,7 +139,7 @@ int main(int argc, char* argv[])
 	Celda** matrix = NULL;
 	int nfilas;
 
-	if(my_pid==P-1)//último proceso
+	if(my_pid == P-1)//último proceso
 	{
 		nfilas = M-(M/P*(P-1));		//el último proceso tiene todas las filas que quedan.
 	}
@@ -176,16 +217,11 @@ int main(int argc, char* argv[])
 			///BROADCAST(altura del predador)
 			predador.setAltura(matrix[predador.getX()-ajuste][predador.getY()].getAltura());
 
-			int altura = predador.getAltura();
-
-			for (int i=0; i< P; i++)
-			{
-				if (i != my_pid)
-				{
-					MPI_.Send(&altura, 1, MPI::INT, i, 0);
-				}
-			}
+			predador_altura = predador.getAltura();
 		} 
+
+		/* BARRERA */
+		pthread_barrier_wait(&sync_barriers[1]);
 
 		/************************************
 		 * SS2
@@ -193,14 +229,11 @@ int main(int argc, char* argv[])
 
 		if (predador.getAltura() == -1)// no tiene la altura del predador
 		{
-			int altura;
-			MPI_.Recv(&altura, 1, MPI::INT, MPI::ANY_SOURCE, 0);
 
-			predador.setAltura(altura);
+			predador.setAltura(predador_altura);
 		}
 
 		//generar lista de áreas
-		list<Area> LArea;
 		for(int i=0; i< nfilas; i++)
 		{
 			for(int j=0; j< M; j++)
@@ -210,14 +243,19 @@ int main(int argc, char* argv[])
 					Area A;
 					int aux = A.recorrerArea(i, j, matrix, nfilas, M, predador);
 					A.setArea(aux);
-					LArea.push_back(A);
+
+					pthread_mutex_lock(&crit_section);
+
+					lista_areas.push_back(A);
+
+					pthread_mutex_unlock(&crit_section);
 				}
 			}
 		}
 
-		//SEND LArea a PO.
 
-		Gather(LArea, 0);
+		/* BARRERA */
+		pthread_barrier_wait(&sync_barriers[2]);
 
 		/************************************
 		 * SS3
@@ -227,18 +265,18 @@ int main(int argc, char* argv[])
 		{
 
 			//Matching the areas
-			Graph g = Graph(LArea.size());
+			Graph g = Graph(lista_areas.size());
 			int i=0;
 			int j=0;
 			int index_area_con_predator=-1;
-			for(auto& A:LArea)
+			for(auto& A:lista_areas)
 			{
 				j=0;
 				if(A.contiene_predator)
 				{
 					index_area_con_predator = i;
 				}
-				for(auto& B:LArea)
+				for(auto& B:lista_areas)
 				{
 					if(A.es_adyacente(B))
 					{
@@ -249,8 +287,8 @@ int main(int argc, char* argv[])
 				i++;
 			}
 			//identificar que areas son adyacentes transitivamente con el area que contiene al predator.
-			bool* ar = new bool[LArea.size()]; //arreglo del tamaño de la lista de areas
-			for(unsigned int a=0; a< LArea.size(); a++){
+			bool* ar = new bool[lista_areas.size()]; //arreglo del tamaño de la lista de areas
+			for(unsigned int a=0; a< lista_areas.size(); a++){
 				ar[a]=false;
 			}
 			g.flood(index_area_con_predator, ar);	//ar dice a que areas puede llegar el predator
@@ -258,7 +296,7 @@ int main(int argc, char* argv[])
 			//Sumar las areas
 			int areaTotal=0;
 			i=0;
-			for(auto& A:LArea){
+			for(auto& A:lista_areas){
 
 				if(ar[i])
 				{//si el predator puede llegar a esta area
@@ -269,9 +307,10 @@ int main(int argc, char* argv[])
 			cout<< areaTotal<< endl;
 		}
 
-		MPI_.Barrier();
+		/* BARRERA */
+		pthread_barrier_wait(&sync_barriers[3]);
 		sub_caso++;
 	}//for_predator
 
-	MPI::Finalize();
+	pthread_exit(NULL);
 } 
