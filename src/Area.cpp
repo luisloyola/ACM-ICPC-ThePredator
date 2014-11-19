@@ -136,29 +136,33 @@ int Area::recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, 
 
 bool Area::es_adyacente(Area& otra)
 {
-	for (auto& celda: inferiores)
+	//for (auto& celda: inferiores)
+	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); celda++)
 	{
-		for (auto& celda_otra:otra.get_sup())
+		//for (auto& celda_otra:otra.get_sup())
+		for (list<Celda>::iterator celda_otra = otra.get_sup().begin(); celda_otra != otra.get_sup().end(); celda_otra++)
 		{
-			if (celda.getX() >= celda_otra.getX())
+			if ((*celda).getX() >= (*celda_otra).getX())
 				break;
 
-			if (celda.getY() == celda_otra.getY() &&
-				(celda_otra.getX() - celda.getX()) == 1)
+			if ((*celda).getY() == (*celda_otra).getY() &&
+				((*celda_otra).getX() - (*celda).getX()) == 1)
 			{
 				return true;
 			}
 		}
 	}
 
-	for (auto& celda: superiores)
+	//for (auto& celda: superiores)
+	for (list<Celda>::iterator celda = superiores.begin(); celda !=superiores.end(); celda++)
 	{
-		for (auto& celda_otra: otra.get_inf())
+		//for (auto& celda_otra: otra.get_inf())
+		for (list<Celda>::iterator celda_otra = otra.get_inf().begin(); celda_otra != otra.get_inf().end(); celda_otra++)
 		{
-			if (celda.getX() <= celda_otra.getX())
+			if ((*celda).getX() <= (*celda_otra).getX())
 				break;
-			if (celda.getY() == celda_otra.getY() &&
-				(celda.getX() - celda_otra.getX()) == 1)
+			if ((*celda).getY() == (*celda_otra).getY() &&
+				((*celda).getX() - (*celda_otra).getX()) == 1)
 			{
 				return true;
 			}
@@ -171,9 +175,10 @@ bool Area::es_adyacente(Area& otra)
 void Area::print_celdas_sup()
 {
 	cout<< "{";
-	for (auto& celda: superiores)
+	//for (auto& celda: superiores)
+	for (list<Celda>::iterator celda = superiores.begin(); celda != superiores.end(); celda++)
 	{
-		cout<< "("<< celda.getX()<< ","<< celda.getY()<< "), ";
+		cout<< "("<< (*celda).getX()<< ","<< (*celda).getY()<< "), ";
 	}
 	cout<< "}"<< endl;
 }
@@ -181,9 +186,10 @@ void Area::print_celdas_sup()
 void Area::print_celdas_inf()
 {
 	cout<< "{";
-	for (auto& celda: inferiores)
+	//for (auto& celda: inferiores)
+	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); celda++)
 	{
-		cout<< "("<< celda.getX()<< ","<< celda.getY()<< "), ";
+		cout<< "("<< (*celda).getX()<< ","<< (*celda).getY()<< "), ";
 	}
 	cout<< "}"<< endl;
 }

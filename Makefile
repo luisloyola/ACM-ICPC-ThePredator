@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -std=c++11 -pthread
+CFLAGS = -Wall -pthread
 
 ZIP = LAB3_18018294-2_17832733-k.zip
 
