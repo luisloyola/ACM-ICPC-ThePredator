@@ -25,7 +25,7 @@ Celda.o: Celda.hpp
 Cuadrado.o: Cuadrado.hpp Predator.hpp
 Graph.o: Graph.hpp
 Predator.o: Predator.hpp
-main.o: Area.hpp Celda.hpp Cuadrado.hpp Graph.hpp Predator.hpp
+main.o: main.hpp Area.hpp Celda.hpp Cuadrado.hpp Graph.hpp Predator.hpp
 
 ## programa prueba
 
