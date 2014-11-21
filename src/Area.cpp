@@ -137,10 +137,10 @@ int Area::recorrerArea(int i, int j, Celda** matrix, int nfilas, int ncolumnas, 
 bool Area::es_adyacente(Area& otra)
 {
 	//for (auto& celda: inferiores)
-	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); celda++)
+	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); ++celda)
 	{
 		//for (auto& celda_otra:otra.get_sup())
-		for (list<Celda>::iterator celda_otra = otra.get_sup().begin(); celda_otra != otra.get_sup().end(); celda_otra++)
+		for (list<Celda>::iterator celda_otra = otra.get_sup().begin(); celda_otra != otra.get_sup().end(); ++celda_otra)
 		{
 			if ((*celda).getX() >= (*celda_otra).getX())
 				break;
@@ -154,10 +154,10 @@ bool Area::es_adyacente(Area& otra)
 	}
 
 	//for (auto& celda: superiores)
-	for (list<Celda>::iterator celda = superiores.begin(); celda !=superiores.end(); celda++)
+	for (list<Celda>::iterator celda = superiores.begin(); celda !=superiores.end(); ++celda)
 	{
 		//for (auto& celda_otra: otra.get_inf())
-		for (list<Celda>::iterator celda_otra = otra.get_inf().begin(); celda_otra != otra.get_inf().end(); celda_otra++)
+		for (list<Celda>::iterator celda_otra = otra.get_inf().begin(); celda_otra != otra.get_inf().end(); ++celda_otra)
 		{
 			if ((*celda).getX() <= (*celda_otra).getX())
 				break;
@@ -176,7 +176,7 @@ void Area::print_celdas_sup()
 {
 	cout<< "{";
 	//for (auto& celda: superiores)
-	for (list<Celda>::iterator celda = superiores.begin(); celda != superiores.end(); celda++)
+	for (list<Celda>::iterator celda = superiores.begin(); celda != superiores.end(); ++celda)
 	{
 		cout<< "("<< (*celda).getX()<< ","<< (*celda).getY()<< "), ";
 	}
@@ -187,7 +187,7 @@ void Area::print_celdas_inf()
 {
 	cout<< "{";
 	//for (auto& celda: inferiores)
-	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); celda++)
+	for (list<Celda>::iterator celda = inferiores.begin(); celda != inferiores.end(); ++celda)
 	{
 		cout<< "("<< (*celda).getX()<< ","<< (*celda).getY()<< "), ";
 	}

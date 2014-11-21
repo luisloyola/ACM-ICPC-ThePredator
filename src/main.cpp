@@ -162,7 +162,7 @@ void* SSteps(void* id_thread)
 		cout<< "Caso "<< caso<< ":"<< endl;
 
 	//for(auto& predador: lista_pd)
-	for (list<Predator>::iterator it_predador = lista_pd.begin(); it_predador != lista_pd.end(); it_predador++)
+	for (list<Predator>::iterator it_predador = lista_pd.begin(); it_predador != lista_pd.end(); ++it_predador)
 	{
 		
 		//Inicializar matriz con celdas de altura 0 y asignar sus posiciones X e Y
@@ -181,7 +181,7 @@ void* SSteps(void* id_thread)
 
 		//para cada cuadrado recorrer la matrix
 		//for(auto& itCua:lista_c)
-		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); itCua++)
+		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); ++itCua)
 		{
 			for(int i=0; i< nfilas; i++)
 			{
@@ -199,7 +199,7 @@ void* SSteps(void* id_thread)
 
 		//para cada cuadrado recorrer la matrix (Cuadrados que NO contienen al predator)
 		//for(auto& itCua:lista_c)
-		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); itCua++)
+		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); ++itCua)
 		{
 			for(int i=0; i< nfilas; i++)
 			{
@@ -274,7 +274,7 @@ void* SSteps(void* id_thread)
 			int j=0;
 			int index_area_con_predator=-1;
 			//for(auto& A:lista_areas)
-			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); A++)
+			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); ++A)
 			{
 				j=0;
 				if((*A).contiene_predator)
@@ -282,7 +282,7 @@ void* SSteps(void* id_thread)
 					index_area_con_predator = i;
 				}
 				//for(auto& B:lista_areas)
-				for (list<Area>::iterator B = lista_areas.begin(); B!=lista_areas.end(); B++)
+				for (list<Area>::iterator B = lista_areas.begin(); B!=lista_areas.end(); ++B)
 				{
 					if((*A).es_adyacente((*B)))
 					{
@@ -292,7 +292,8 @@ void* SSteps(void* id_thread)
 				}
 				i++;
 			}
-			//identificar que areas son adyacentes transitivamente con el area que contiene al predator.
+			//identificar que areas son adyacentes transitivamente con el area 
+			//que contiene al predator.
 			bool* ar = new bool[lista_areas.size()]; //arreglo del tamaño de la lista de areas
 			for(unsigned int a=0; a< lista_areas.size(); a++){
 				ar[a]=false;
@@ -302,8 +303,8 @@ void* SSteps(void* id_thread)
 			//Sumar las areas
 			int areaTotal=0;
 			i=0;
-			//for(auto& A:lista_areas){
-			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); A++)
+
+			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); ++A)
 			{
 				if(ar[i])
 				{//si el predator puede llegar a esta area
