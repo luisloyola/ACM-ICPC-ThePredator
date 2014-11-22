@@ -95,7 +95,7 @@ void* SSteps(void* id_thread)
 
 	if (my_pid == 0)
 	{
-		ifstream in(filename);	//archivo de entrada.
+		ifstream in(filename.c_str());	//archivo de entrada.
 
 		if (!in.is_open())
 		{
@@ -161,10 +161,10 @@ void* SSteps(void* id_thread)
 	if (my_pid == 0)
 		cout<< "Caso "<< caso<< ":"<< endl;
 
-	for(auto& predador: lista_pd)
+	//for(auto& predador: lista_pd)
+	for (list<Predator>::iterator it_predador = lista_pd.begin(); it_predador != lista_pd.end(); ++it_predador)
 	{
-
-
+		
 		//Inicializar matriz con celdas de altura 0 y asignar sus posiciones X e Y
 		int ajuste = M/P*my_pid; //cada proceso tiene una franja de la matriz total.
 		for(int i=0; i< nfilas; i++)
@@ -180,14 +180,15 @@ void* SSteps(void* id_thread)
 		//Recorrer matrix de celdas (Cuadrados que contienen al predator)
 
 		//para cada cuadrado recorrer la matrix
-		for(auto& itCua:lista_c)
+		//for(auto& itCua:lista_c)
+		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); ++itCua)
 		{
 			for(int i=0; i< nfilas; i++)
 			{
 				for(int j=0; j< M; j++)
 				{
-					if( itCua.pertenece(matrix[i][j].getX(), matrix[i][j].getY()) &&
-							(itCua.pertenece(predador.getX(), predador.getY())))
+					if( (*itCua).pertenece(matrix[i][j].getX(), matrix[i][j].getY()) &&
+							((*itCua).pertenece((*it_predador).getX(), (*it_predador).getY())))
 					{//si la celda pertenece al cuadrado y ademas el cuadrado contiene al depredador
 						matrix[i][j].aumentar();
 					}
@@ -197,14 +198,15 @@ void* SSteps(void* id_thread)
 
 
 		//para cada cuadrado recorrer la matrix (Cuadrados que NO contienen al predator)
-		for(auto& itCua:lista_c)
+		//for(auto& itCua:lista_c)
+		for (list<Cuadrado>::iterator itCua = lista_c.begin(); itCua != lista_c.end(); ++itCua)
 		{
 			for(int i=0; i< nfilas; i++)
 			{
 				for(int j=0; j< M; j++)
 				{
-					if( itCua.pertenece(matrix[i][j].getX(), matrix[i][j].getY()) &&
-							!(itCua.pertenece(predador.getX(), predador.getY())) )
+					if( (*itCua).pertenece(matrix[i][j].getX(), matrix[i][j].getY()) &&
+							!((*itCua).pertenece((*it_predador).getX(), (*it_predador).getY())) )
 					{//si la celda pertenece al cuadrado y ademas el cuadrado NO contiene al depredador
 						matrix[i][j].setAltura(-1);
 					}
@@ -213,13 +215,13 @@ void* SSteps(void* id_thread)
 		}
 
 		// Ver si el proceso tiene al depredador en su matrix.
-		if(predador.getX()>=matrix[0][0].getX() &&
-				predador.getX()< (matrix[0][0].getX()+nfilas))
+		if((*it_predador).getX()>=matrix[0][0].getX() &&
+				(*it_predador).getX()< (matrix[0][0].getX()+nfilas))
 		{//el proceso tiene al depredador
 			///BROADCAST(altura del predador)
-			predador.setAltura(matrix[predador.getX()-ajuste][predador.getY()].getAltura());
+			(*it_predador).setAltura(matrix[(*it_predador).getX()-ajuste][(*it_predador).getY()].getAltura());
 
-			predador_altura = predador.getAltura();
+			predador_altura = (*it_predador).getAltura();
 		} 
 
 		/* BARRERA */
@@ -229,10 +231,10 @@ void* SSteps(void* id_thread)
 		 * SS2
 		 ************************************/
 
-		if (predador.getAltura() == -1)// no tiene la altura del predador
+		if ((*it_predador).getAltura() == -1)// no tiene la altura del predador
 		{
 
-			predador.setAltura(predador_altura);
+			(*it_predador).setAltura(predador_altura);
 		}
 
 		//generar lista de áreas
@@ -240,10 +242,10 @@ void* SSteps(void* id_thread)
 		{
 			for(int j=0; j< M; j++)
 			{
-				if( (!matrix[i][j].fueVisitada()) && matrix[i][j].getAltura()==predador.getAltura())
+				if( (!matrix[i][j].fueVisitada()) && matrix[i][j].getAltura()==(*it_predador).getAltura())
 				{//si la celda no ha sido visitada y está a la altura del predator
 					Area A;
-					int aux = A.recorrerArea(i, j, matrix, nfilas, M, predador);
+					int aux = A.recorrerArea(i, j, matrix, nfilas, M, (*it_predador));
 					A.setArea(aux);
 
 					pthread_mutex_lock(&crit_section);
@@ -271,16 +273,18 @@ void* SSteps(void* id_thread)
 			int i=0;
 			int j=0;
 			int index_area_con_predator=-1;
-			for(auto& A:lista_areas)
+			//for(auto& A:lista_areas)
+			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); ++A)
 			{
 				j=0;
-				if(A.contiene_predator)
+				if((*A).contiene_predator)
 				{
 					index_area_con_predator = i;
 				}
-				for(auto& B:lista_areas)
+				//for(auto& B:lista_areas)
+				for (list<Area>::iterator B = lista_areas.begin(); B!=lista_areas.end(); ++B)
 				{
-					if(A.es_adyacente(B))
+					if((*A).es_adyacente((*B)))
 					{
 						g.addEdge(i, j);
 					}
@@ -288,7 +292,8 @@ void* SSteps(void* id_thread)
 				}
 				i++;
 			}
-			//identificar que areas son adyacentes transitivamente con el area que contiene al predator.
+			//identificar que areas son adyacentes transitivamente con el area 
+			//que contiene al predator.
 			bool* ar = new bool[lista_areas.size()]; //arreglo del tamaño de la lista de areas
 			for(unsigned int a=0; a< lista_areas.size(); a++){
 				ar[a]=false;
@@ -298,11 +303,12 @@ void* SSteps(void* id_thread)
 			//Sumar las areas
 			int areaTotal=0;
 			i=0;
-			for(auto& A:lista_areas){
 
+			for (list<Area>::iterator A = lista_areas.begin(); A!=lista_areas.end(); ++A)
+			{
 				if(ar[i])
 				{//si el predator puede llegar a esta area
-					areaTotal += A.getArea();
+					areaTotal += (*A).getArea();
 				}
 				i++;
 			}
